@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+
 
 Route::get('/test', function () {
     return response()->json([
@@ -9,3 +11,5 @@ Route::get('/test', function () {
         'time' => now()
     ]);
 });
+Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/login', [AuthController::class, 'login']);
