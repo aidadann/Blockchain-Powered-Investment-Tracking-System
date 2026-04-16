@@ -55,4 +55,24 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'User logged in successfully', 'user' => $user, 'token' => $token], 200);
     }
+
+    public function user(Request $request)
+    {
+        // Get authenticated user and eager load role
+        $user = $request->user()->load('role');
+
+        return response()->json([
+            'user' => $user
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        // Delete current access token (Sanctum)
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Logged out successfully'
+        ]);
+    }
 }
