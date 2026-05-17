@@ -26,13 +26,27 @@
         </div>
       </div>
 
-      <!-- Right Panel - Login Form -->
+      <!-- Right Panel - Register Form -->
       <div class="form-panel">
         <div class="form-content">
-          <h2 class="form-title">Welcome back</h2>
-          <p class="form-subtitle">Sign in to your account to continue</p>
+          <h2 class="form-title">Create Account</h2>
+          <p class="form-subtitle">Get started with your investment journey</p>
 
-          <form @submit.prevent="handleLogin" class="auth-form">
+          <form @submit.prevent="handleRegister" class="auth-form">
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <div class="input-wrapper">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input
+                  id="name"
+                  type="text"
+                  v-model="name"
+                  placeholder="John Doe"
+                  required
+                />
+              </div>
+            </div>
+
             <div class="form-group">
               <label for="email">Email Address</label>
               <div class="input-wrapper">
@@ -55,21 +69,35 @@
                   id="password"
                   type="password"
                   v-model="password"
-                  placeholder="••••••••"
+                  placeholder="Minimum 8 characters"
                   required
                 />
               </div>
             </div>
 
-            <button type="submit" class="btn-login" :disabled="isLoading">
-              {{ isLoading ? 'Signing in...' : 'Sign In' }}
+            <div class="form-group">
+              <label for="role">Register As</label>
+              <div class="input-wrapper select-wrapper">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a0aec0" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                <select id="role" v-model="roleId" required>
+                  <option value="" disabled>Select your role</option>
+                  <option value="1">Investor</option>
+                  <option value="2">Admin</option>
+                  <option value="3">Auditor</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-register" :disabled="isLoading">
+              {{ isLoading ? 'Creating account...' : 'Create Account' }}
             </button>
           </form>
 
           <p v-if="error" class="error-msg">{{ error }}</p>
+          <p v-if="successMsg" class="success-msg">{{ successMsg }}</p>
 
           <div class="form-footer">
-            <p>Don't have an account? <router-link to="/register" class="link">Sign up</router-link></p>
+            <p>Already have an account? <router-link to="/login" class="link">Sign in</router-link></p>
           </div>
         </div>
       </div>
@@ -80,34 +108,42 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import api from '../api'
 
 const router = useRouter()
-const auth = useAuthStore()
 
+const name = ref('')
 const email = ref('')
 const password = ref('')
+const roleId = ref('')
 const error = ref('')
+const successMsg = ref('')
 const isLoading = ref(false)
 
-async function handleLogin() {
+async function handleRegister() {
   error.value = ''
+  successMsg.value = ''
   isLoading.value = true
 
   try {
-    await auth.login(email.value, password.value)
+    await api.post('/auth/register', {
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      role_id: Number(roleId.value),
+    })
 
-    const role = auth.userRole
-
-    if (role) {
-      await router.push('/' + role.toLowerCase())
-    } else {
-      error.value = 'User role not found'
-    }
+    successMsg.value = 'Account created successfully! Redirecting to login...'
+    setTimeout(() => {
+      router.push('/login')
+    }, 2000)
   } catch (err: any) {
-    error.value =
-      err?.response?.data?.message ||
-      'Login failed. Please check your credentials.'
+    if (err?.response?.data?.errors) {
+      const errors = err.response.data.errors
+      error.value = Object.values(errors).flat().join('. ')
+    } else {
+      error.value = err?.response?.data?.message || 'Registration failed. Please try again.'
+    }
   } finally {
     isLoading.value = false
   }
@@ -192,7 +228,7 @@ async function handleLogin() {
 /* ===== Form Panel ===== */
 .form-panel {
   background: white;
-  padding: 3rem 2.5rem;
+  padding: 2.5rem;
   display: flex;
   align-items: center;
 }
@@ -211,13 +247,13 @@ async function handleLogin() {
 .form-subtitle {
   font-size: 0.9rem;
   color: #a0aec0;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1rem;
 }
 
 .form-group label {
@@ -246,21 +282,28 @@ async function handleLogin() {
   flex-shrink: 0;
 }
 
-.input-wrapper input {
+.input-wrapper input,
+.input-wrapper select {
   flex: 1;
   border: none;
   outline: none;
-  padding: 0.7rem 0.6rem;
+  padding: 0.65rem 0.6rem;
   font-size: 0.95rem;
   background: transparent;
   color: #1a202c;
+  font-family: inherit;
 }
 
 .input-wrapper input::placeholder {
   color: #cbd5e0;
 }
 
-.btn-login {
+.select-wrapper select {
+  cursor: pointer;
+  appearance: none;
+}
+
+.btn-register {
   width: 100%;
   padding: 0.75rem;
   background: #1a1a1a;
@@ -271,14 +314,22 @@ async function handleLogin() {
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s;
-  margin-top: 0.5rem;
+  margin-top: 0.3rem;
 }
 
-.btn-login:hover { background: #333; }
-.btn-login:disabled { background: #a0aec0; cursor: not-allowed; }
+.btn-register:hover { background: #333; }
+.btn-register:disabled { background: #a0aec0; cursor: not-allowed; }
 
 .error-msg {
   color: #e53e3e;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.success-msg {
+  color: #38a169;
   font-weight: 600;
   font-size: 0.9rem;
   margin-top: 1rem;
