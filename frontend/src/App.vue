@@ -27,4 +27,26 @@ body {
 #app {
   min-height: 100vh;
 }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.explorer-link {
+  color: #a0aec0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid #444;
+  border-radius: 6px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.explorer-link:hover {
+  color: white;
+  border-color: #a0aec0;
+}
 </style>

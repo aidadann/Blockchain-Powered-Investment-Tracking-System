@@ -54,7 +54,6 @@ class InvestmentController extends Controller
         }
 
         $investment->status = 'approved';
-        $investment->blockchain_hash = '0x_placeholder_hash_until_web3_integration';
         $investment->save();
 
         AuditLog::create([
@@ -64,6 +63,25 @@ class InvestmentController extends Controller
         ]);
 
         return response()->json(['message' => 'Investment approved successfully', 'investment' => $investment]);
+    }
+
+    public function updateHash(Request $request, $id)
+    {
+        $request->validate([
+            'blockchain_hash' => 'required|string',
+        ]);
+
+        $investment = Investment::findOrFail($id);
+        $investment->blockchain_hash = $request->blockchain_hash;
+        $investment->save();
+
+        AuditLog::create([
+            'user_id' => $request->user()->id,
+            'action' => 'Blockchain Hash Updated',
+            'details' => 'Investment ID: ' . $investment->id . ' hash: ' . $request->blockchain_hash,
+        ]);
+
+        return response()->json(['message' => 'Hash updated', 'investment' => $investment]);
     }
 }
 

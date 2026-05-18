@@ -4,6 +4,7 @@ import RegisterView from '../views/RegisterView.vue'
 import InvestorDashboard from '../views/InvestorDashboard.vue'
 import AuditorDashboard from '../views/AuditorDashboard.vue'
 import AdminDashboard from '../views/AdminDashboard.vue'
+import BlockchainExplorer from '../views/BlockchainExplorer.vue'
 import { useAuthStore } from '../stores/auth'
 
 const routes = [
@@ -41,6 +42,13 @@ const routes = [
   },
 
   {
+    path: '/explorer',
+    name: 'BlockchainExplorer',
+    component: BlockchainExplorer,
+    meta: { requiresAuth: true }
+  },
+
+  {
     path: '/',
     redirect: '/login'
   }
@@ -60,7 +68,7 @@ router.beforeEach(async (to, from, next) => {
     if (!auth.user) {
       await auth.fetchUser()
     }
-    if (!auth.user || auth.userRole?.toLowerCase() !== to.meta.role) {
+    if (!auth.user || (to.meta.role && auth.userRole?.toLowerCase() !== to.meta.role)) {
       return next('/login')
     }
   }
