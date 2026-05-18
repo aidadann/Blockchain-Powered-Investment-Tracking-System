@@ -65,6 +65,26 @@ class InvestmentController extends Controller
         return response()->json(['message' => 'Investment approved successfully', 'investment' => $investment]);
     }
 
+    public function reject(Request $request, $id)
+    {
+        $investment = Investment::findOrFail($id);
+
+        if ($investment->status !== 'pending') {
+            return response()->json(['message' => 'Investment is already processed'], 400);
+        }
+
+        $investment->status = 'rejected';
+        $investment->save();
+
+        AuditLog::create([
+            'user_id' => $request->user()->id,
+            'action' => 'Investment Rejected',
+            'details' => 'Admin rejected investment ID: ' . $investment->id . ' for amount: ' . $investment->amount,
+        ]);
+
+        return response()->json(['message' => 'Investment rejected successfully', 'investment' => $investment]);
+    }
+
     public function updateHash(Request $request, $id)
     {
         $request->validate([

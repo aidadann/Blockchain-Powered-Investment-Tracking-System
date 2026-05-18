@@ -104,6 +104,28 @@ export const useInvestmentStore = defineStore('investment', {
             } finally {
                 this.isLoading = false;
             }
+        },
+
+        async rejectInvestment(id: number) {
+            this.isLoading = true;
+            this.error = null;
+            try {
+                // Reject in Laravel database
+                const response = await api.patch('/investments/' + id + '/reject');
+
+                // Update local state
+                const index = this.investments.findIndex((inv) => inv.id === id);
+                if (index !== -1) {
+                    this.investments[index] = response.data.investment;
+                }
+                return true;
+            } catch (error: any) {
+                this.error = error.response?.data?.message || 'Failed to reject investment';
+                console.error(error);
+                return false;
+            } finally {
+                this.isLoading = false;
+            }
         }
     }
 })

@@ -73,9 +73,14 @@
                   <span class="pending-name">Investor #{{ inv.user_id }}</span>
                   <span class="pending-asset">{{ inv.asset_name }}</span>
                 </div>
-                <button class="btn-approve" @click="handleApprove(inv.id)" :disabled="investmentStore.isLoading">
-                  Approve
-                </button>
+                <div class="action-buttons">
+                  <button class="btn-approve" @click="handleApprove(inv.id)" :disabled="investmentStore.isLoading">
+                    Approve
+                  </button>
+                  <button class="btn-reject" @click="handleReject(inv.id)" :disabled="investmentStore.isLoading">
+                    Reject
+                  </button>
+                </div>
               </div>
               <p v-if="pendingInvestments.length === 0" class="empty-list">No pending approvals.</p>
             </div>
@@ -169,6 +174,15 @@ async function handleApprove(id: number) {
   const ok = await investmentStore.approveInvestment(id)
   if (ok) {
     successMsg.value = `Investment #${id} approved successfully!`
+    setTimeout(() => { successMsg.value = '' }, 3000)
+  }
+}
+
+async function handleReject(id: number) {
+  successMsg.value = ''
+  const ok = await investmentStore.rejectInvestment(id)
+  if (ok) {
+    successMsg.value = `Investment #${id} rejected successfully!`
     setTimeout(() => { successMsg.value = '' }, 3000)
   }
 }
@@ -370,6 +384,25 @@ async function handleLogout() {
 .btn-approve:hover { background: #2f855a; }
 .btn-approve:disabled { background: #a0aec0; cursor: not-allowed; }
 
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-reject {
+  padding: 0.35rem 0.8rem;
+  background: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+.btn-reject:hover { background: #c53030; }
+.btn-reject:disabled { background: #a0aec0; cursor: not-allowed; }
+
 /* Users List */
 .user-list {
   max-height: 280px;
@@ -440,6 +473,8 @@ async function handleLogout() {
   font-size: 0.82rem;
   color: #4a5568;
   line-height: 1.6;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 .global-success {

@@ -405,6 +405,8 @@ async function handleLogout() {
   font-size: 0.82rem;
   color: #4a5568;
   line-height: 1.6;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 .empty-list {

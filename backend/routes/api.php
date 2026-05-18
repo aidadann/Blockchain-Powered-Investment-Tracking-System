@@ -12,6 +12,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/investments', [InvestmentController::class, 'index']);
     Route::post('/investments', [InvestmentController::class, 'store'])->middleware('role:investor');
     Route::patch('/investments/{id}/approve', [InvestmentController::class, 'approve'])->middleware('role:admin');
+    Route::patch('/investments/{id}/reject', [InvestmentController::class, 'reject'])->middleware('role:admin');
     Route::patch('/investments/{id}/hash', [InvestmentController::class, 'updateHash']);
 
     Route::get('/audits', [AuditLogController::class, 'index'])->middleware('role:auditor');
