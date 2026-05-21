@@ -64,7 +64,7 @@
               <tr v-for="row in crossRef" :key="row.id">
                 <td>#{{ row.id }}</td>
                 <td>{{ row.asset_name }}</td>
-                <td>${{ Number(row.amount).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</td>
+                <td>RM {{ Number(row.amount).toLocaleString('ms-MY', { minimumFractionDigits: 2 }) }}</td>
                 <td>
                   <span :class="'badge badge-' + row.db_status">{{ row.db_status }}</span>
                 </td>

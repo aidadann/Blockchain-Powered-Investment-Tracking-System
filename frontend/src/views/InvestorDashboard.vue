@@ -72,7 +72,7 @@
           <div class="investment-list">
             <div v-for="inv in approvedInvestments" :key="inv.id" class="investment-list-item">
               <span>{{ inv.asset_name }}</span>
-              <span>${{ Number(inv.amount).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+              <span>RM {{ Number(inv.amount).toLocaleString('ms-MY', { minimumFractionDigits: 2 }) }}</span>
             </div>
             <div v-if="approvedInvestments.length === 0" class="empty-list">
               No active investments yet.
@@ -136,7 +136,7 @@
                 <span :class="'badge badge-' + inv.status">{{ inv.status.toUpperCase() }}</span>
               </td>
               <td>{{ inv.status === 'approved' ? '1' : '-' }}</td>
-              <td>{{ inv.status === 'approved' ? '$' + Number(inv.amount).toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-' }}</td>
+              <td>{{ inv.status === 'approved' ? 'RM ' + Number(inv.amount).toLocaleString('ms-MY', { minimumFractionDigits: 2 }) : '-' }}</td>
               <td>{{ formatDate(inv.created_at) }}</td>
             </tr>
             <tr v-if="investmentStore.investments.length === 0">
@@ -157,7 +157,7 @@
             <input v-model="assetName" type="text" placeholder="e.g. Real Estate Property A" required />
           </div>
           <div class="form-group">
-            <label>Amount (USD)</label>
+            <label>Amount (RM)</label>
             <input v-model.number="amount" type="number" min="1" placeholder="e.g. 5000" required />
           </div>
           <div class="modal-actions">
@@ -198,14 +198,14 @@ onMounted(() => {
 // Computed values for summary cards
 const totalInvestment = computed(() => {
   const total = investmentStore.investments.reduce((sum: number, inv: any) => sum + Number(inv.amount), 0)
-  return total >= 1000000 ? (total / 1000000).toFixed(1) + 'M' : total.toLocaleString('en-US')
+  return total >= 1000000 ? 'RM ' + (total / 1000000).toFixed(1) + 'M' : 'RM ' + total.toLocaleString('ms-MY')
 })
 
 const approvedTotal = computed(() => {
   const total = investmentStore.investments
     .filter((inv: any) => inv.status === 'approved')
     .reduce((sum: number, inv: any) => sum + Number(inv.amount), 0)
-  return total >= 1000000 ? (total / 1000000).toFixed(1) + 'M' : total.toLocaleString('en-US')
+  return total >= 1000000 ? 'RM ' + (total / 1000000).toFixed(1) + 'M' : 'RM ' + total.toLocaleString('ms-MY')
 })
 
 const pendingCount = computed(() => {
