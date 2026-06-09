@@ -89,3 +89,35 @@ export async function getInvestmentFromChain(id: number) {
     isApproved: result[3]
   }
 }
+
+/**
+ * Connect to MetaMask and return the connected wallet address.
+ */
+export async function connectWallet(): Promise<string> {
+  if (!(window as any).ethereum) {
+    throw new Error('MetaMask is not installed. Please install MetaMask to continue.')
+  }
+
+  const accounts = await (window as any).ethereum.request({ method: 'eth_requestAccounts' })
+  return accounts[0] as string
+}
+
+/**
+ * Listen for InvestmentApproved events emitted by the smart contract.
+ * Calls the provided callback with the investment ID whenever an approval occurs.
+ * Returns a cleanup function to stop listening.
+ */
+export function listenForApprovals(onApproved: (investmentId: number) => void): () => void {
+  const contract = getReadOnlyContract()
+
+  const handler = (id: any) => {
+    onApproved(Number(id))
+  }
+
+  contract.on('InvestmentApproved', handler)
+
+  // Return cleanup function
+  return () => {
+    contract.off('InvestmentApproved', handler)
+  }
+}

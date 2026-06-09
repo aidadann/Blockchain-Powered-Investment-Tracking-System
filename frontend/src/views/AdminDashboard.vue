@@ -6,6 +6,10 @@
         <span class="hamburger">☰</span>
       </button>
       <div class="nav-right">
+        <div v-if="walletAddress" class="wallet-badge" :title="walletAddress">
+          🦊 {{ walletAddress.slice(0, 6) }}...{{ walletAddress.slice(-4) }}
+        </div>
+        <button v-else class="btn-connect-wallet" @click="handleConnectWallet">🦊 Connect Wallet</button>
         <router-link to="/explorer" class="explorer-link">⛓️ Explorer</router-link>
         <button class="nav-btn profile-btn" @click="showProfileMenu = !showProfileMenu">
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -122,10 +126,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useInvestmentStore } from '../stores/investment'
+import { connectWallet, listenForApprovals } from '../services/blockchain'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -133,9 +138,21 @@ const investmentStore = useInvestmentStore()
 
 const showProfileMenu = ref(false)
 const successMsg = ref('')
+const walletAddress = ref('')
+let cleanupListener: (() => void) | null = null
 
 onMounted(() => {
   investmentStore.fetchInvestments()
+
+  // Listen for on-chain InvestmentApproved events and auto-refresh
+  cleanupListener = listenForApprovals((investmentId: number) => {
+    console.log(`⛓️ Investment #${investmentId} approved on-chain! Refreshing...`)
+    investmentStore.fetchInvestments()
+  })
+})
+
+onUnmounted(() => {
+  if (cleanupListener) cleanupListener()
 })
 
 const totalCount = computed(() => investmentStore.investments.length)
@@ -191,6 +208,14 @@ async function handleLogout() {
   await auth.logout()
   router.push('/login')
 }
+
+async function handleConnectWallet() {
+  try {
+    walletAddress.value = await connectWallet()
+  } catch (err: any) {
+    console.warn('MetaMask connection failed:', err.message)
+  }
+}
 </script>
 
 <style scoped>
@@ -219,7 +244,32 @@ async function handleLogout() {
   font-size: 1.4rem;
 }
 
-.nav-right { position: relative; }
+.nav-right { position: relative; display: flex; align-items: center; gap: 0.8rem; }
+
+.wallet-badge {
+  background: rgba(246, 133, 27, 0.15);
+  color: #f6851b;
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: monospace;
+  cursor: default;
+}
+
+.btn-connect-wallet {
+  background: #f6851b;
+  color: white;
+  border: none;
+  padding: 0.35rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-connect-wallet:hover { background: #e2761b; }
+
 .profile-btn { display: flex; align-items: center; }
 
 .profile-dropdown {

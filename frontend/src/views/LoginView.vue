@@ -64,7 +64,30 @@
             <button type="submit" class="btn-login" :disabled="isLoading">
               {{ isLoading ? 'Signing in...' : 'Sign In' }}
             </button>
+
+            <div class="forgot-link-row">
+              <router-link to="/forgot-password" class="forgot-link">Forgot password?</router-link>
+            </div>
           </form>
+
+          <!-- Email Verification Notice -->
+          <div v-if="needsVerification" class="verify-banner">
+            <p>⚠️ Your email is not verified. Please check your inbox.</p>
+            <button class="btn-resend" @click="handleResendVerification" :disabled="isResending">
+              {{ isResending ? 'Sending...' : 'Resend Verification Email' }}
+            </button>
+            <p v-if="resendMsg" class="resend-msg">{{ resendMsg }}</p>
+          </div>
+
+          <div class="divider">
+            <span>or</span>
+          </div>
+
+          <button class="btn-metamask" @click="handleConnectWallet" :disabled="isConnecting">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg>
+            {{ isConnecting ? 'Connecting...' : walletAddress ? '🦊 ' + walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4) : '🦊 Connect MetaMask' }}
+          </button>
+          <p v-if="walletAddress" class="wallet-connected">✅ Wallet connected</p>
 
           <p v-if="error" class="error-msg">{{ error }}</p>
 
@@ -81,6 +104,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { connectWallet } from '../services/blockchain'
+import api from '../api'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -89,9 +114,16 @@ const email = ref('')
 const password = ref('')
 const error = ref('')
 const isLoading = ref(false)
+const isConnecting = ref(false)
+const walletAddress = ref('')
+const needsVerification = ref(false)
+const isResending = ref(false)
+const resendMsg = ref('')
 
 async function handleLogin() {
   error.value = ''
+  needsVerification.value = false
+  resendMsg.value = ''
   isLoading.value = true
 
   try {
@@ -105,11 +137,43 @@ async function handleLogin() {
       error.value = 'User role not found'
     }
   } catch (err: any) {
-    error.value =
-      err?.response?.data?.message ||
-      'Login failed. Please check your credentials.'
+    const msg = err?.response?.data?.message || 'Login failed. Please check your credentials.'
+    const emailVerified = err?.response?.data?.email_verified
+
+    if (emailVerified === false) {
+      needsVerification.value = true
+    }
+
+    error.value = msg
   } finally {
     isLoading.value = false
+  }
+}
+
+async function handleConnectWallet() {
+  isConnecting.value = true
+  error.value = ''
+  try {
+    walletAddress.value = await connectWallet()
+  } catch (err: any) {
+    error.value = err.message || 'Failed to connect MetaMask'
+  } finally {
+    isConnecting.value = false
+  }
+}
+
+async function handleResendVerification() {
+  isResending.value = true
+  resendMsg.value = ''
+  try {
+    const response = await api.post('/auth/resend-verification', {
+      email: email.value,
+    })
+    resendMsg.value = response.data.message
+  } catch (err: any) {
+    resendMsg.value = err?.response?.data?.message || 'Failed to resend.'
+  } finally {
+    isResending.value = false
   }
 }
 </script>
@@ -276,6 +340,109 @@ async function handleLogin() {
 
 .btn-login:hover { background: #333; }
 .btn-login:disabled { background: #a0aec0; cursor: not-allowed; }
+
+.forgot-link-row {
+  text-align: right;
+  margin-top: 0.3rem;
+}
+
+.forgot-link {
+  font-size: 0.82rem;
+  color: #718096;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover { color: #1a1a1a; }
+
+.verify-banner {
+  background: #fffbeb;
+  border: 1px solid #fbbf24;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.verify-banner p {
+  font-size: 0.85rem;
+  color: #92400e;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.btn-resend {
+  padding: 0.45rem 1rem;
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-resend:hover { background: #d97706; }
+.btn-resend:disabled { background: #a0aec0; cursor: not-allowed; }
+
+.resend-msg {
+  font-size: 0.8rem;
+  color: #38a169;
+  margin-top: 0.4rem;
+  font-weight: 600;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.2rem 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.divider span {
+  font-size: 0.82rem;
+  color: #a0aec0;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.btn-metamask {
+  width: 100%;
+  padding: 0.75rem;
+  background: #f6851b;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-metamask:hover { background: #e2761b; transform: translateY(-1px); }
+.btn-metamask:disabled { background: #a0aec0; cursor: not-allowed; transform: none; }
+
+.wallet-connected {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #38a169;
+  margin-top: 0.5rem;
+}
 
 .error-msg {
   color: #e53e3e;
