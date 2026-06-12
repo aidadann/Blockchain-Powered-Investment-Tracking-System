@@ -2,11 +2,11 @@
   <div class="dashboard-layout">
     <!-- Top Navbar -->
     <nav class="top-nav">
-      <button class="nav-btn">
-        <span class="hamburger">☰</span>
+      <button class="nav-btn" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <div class="nav-right">
-        <router-link to="/explorer" class="explorer-link">⛓️ Explorer</router-link>
+        <router-link to="/explorer" class="explorer-link"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Explorer</router-link>
         <button class="nav-btn profile-btn" @click="showProfileMenu = !showProfileMenu">
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </button>
@@ -170,12 +170,12 @@ async function handleLogout() {
 <style scoped>
 .dashboard-layout {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--color-bg);
 }
 
 /* ===== Top Navbar ===== */
 .top-nav {
-  background: #1a1a1a;
+  background: var(--color-dark);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -183,6 +183,7 @@ async function handleLogout() {
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .nav-btn {
@@ -190,52 +191,63 @@ async function handleLogout() {
   border: none;
   cursor: pointer;
   color: white;
-  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  padding: 0.3rem;
+  border-radius: var(--radius-sm);
+  transition: background 200ms ease;
 }
+.nav-btn:hover { background: rgba(255,255,255,0.08); }
 
-.nav-right { position: relative; }
+.nav-right { position: relative; display: flex; align-items: center; gap: 0.7rem; }
+.explorer-link { color: var(--color-text-muted); font-size: 0.82rem; font-weight: 600; text-decoration: none; padding: 0.35rem 0.7rem; border: 1px solid var(--color-dark-muted); border-radius: var(--radius-sm); transition: color 200ms ease, border-color 200ms ease; display: flex; align-items: center; gap: 0.35rem; }
+.explorer-link:hover { color: white; border-color: var(--color-text-muted); }
 .profile-btn { display: flex; align-items: center; }
 
 .profile-dropdown {
   position: absolute;
   right: 0;
   top: 45px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   padding: 1rem;
   min-width: 180px;
   z-index: 200;
+  animation: slideDown 0.2s ease;
 }
 
-.profile-name { font-weight: 700; color: #1a202c; margin-bottom: 0.2rem; }
-.profile-role { font-size: 0.85rem; color: #718096; }
-.profile-dropdown hr { border: none; border-top: 1px solid #e2e8f0; margin: 0.7rem 0; }
+.profile-name { font-weight: 700; color: var(--color-text); margin-bottom: 0.2rem; }
+.profile-role { font-size: 0.85rem; color: var(--color-text-secondary); }
+.profile-dropdown hr { border: none; border-top: 1px solid var(--color-border); margin: 0.7rem 0; }
 
 .dropdown-logout {
   width: 100%;
-  background: #e53e3e;
+  background: var(--color-error);
   color: white;
   border: none;
   padding: 0.5rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: 600;
+  transition: background 200ms ease;
 }
-.dropdown-logout:hover { background: #c53030; }
+.dropdown-logout:hover { background: #dc2626; }
 
 /* ===== Main ===== */
 .main-content {
   padding: 2rem 2.5rem;
   max-width: 1100px;
   margin: 0 auto;
+  animation: slideUp 0.5s ease;
 }
 
 .welcome-heading {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 800;
-  color: #1a202c;
+  color: var(--color-text);
   margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
 }
 
 /* ===== Top Row ===== */
@@ -247,12 +259,14 @@ async function handleLogout() {
 }
 
 .card {
-  background: white;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
   padding: 1.2rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  border: 1px solid #edf2f7;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  transition: box-shadow 200ms ease;
 }
+.card:hover { box-shadow: var(--shadow-lg); }
 
 .card-title {
   font-size: 0.95rem;
@@ -311,25 +325,25 @@ async function handleLogout() {
 .btn-report {
   flex: 1;
   padding: 0.7rem 1rem;
-  background: #1a1a1a;
+  background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: 600;
   font-size: 0.9rem;
-  transition: background 0.2s;
+  transition: background 200ms ease, transform 150ms ease;
 }
 
-.btn-report:hover { background: #333; }
+.btn-report:hover { background: var(--color-primary-hover); transform: translateY(-1px); }
 
 .btn-report-alt {
-  background: white;
-  color: #1a202c;
-  border: 2px solid #1a1a1a;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 2px solid var(--color-primary);
 }
 
-.btn-report-alt:hover { background: #f7fafc; }
+.btn-report-alt:hover { background: var(--color-primary-light); transform: translateY(-1px); }
 
 /* Timeline */
 .timeline-card {
@@ -416,7 +430,7 @@ async function handleLogout() {
   padding: 0.5rem 0;
 }
 
-.error-msg { color: #e53e3e; font-weight: 600; margin-top: 1rem; }
+.error-msg { color: var(--color-error); font-weight: 600; margin-top: 1rem; background: var(--color-error-bg); padding: 0.5rem 1rem; border-radius: var(--radius-sm); }
 
 /* ===== Responsive ===== */
 @media (max-width: 800px) {

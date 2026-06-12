@@ -2,15 +2,15 @@
   <div class="dashboard-layout">
     <!-- Top Navbar -->
     <nav class="top-nav">
-      <button class="nav-btn" @click="sidebarOpen = !sidebarOpen">
-        <span class="hamburger">☰</span>
+      <button class="nav-btn" @click="sidebarOpen = !sidebarOpen" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <div class="nav-right">
         <div v-if="walletAddress" class="wallet-badge" :title="walletAddress">
-          🦊 {{ walletAddress.slice(0, 6) }}...{{ walletAddress.slice(-4) }}
+          {{ walletAddress.slice(0, 6) }}...{{ walletAddress.slice(-4) }}
         </div>
-        <button v-else class="btn-connect-wallet" @click="handleConnectWallet">🦊 Connect Wallet</button>
-        <router-link to="/explorer" class="explorer-link">⛓️ Explorer</router-link>
+        <button v-else class="btn-connect-wallet" @click="handleConnectWallet">Connect Wallet</button>
+        <router-link to="/explorer" class="explorer-link"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Explorer</router-link>
         <button class="nav-btn profile-btn" @click="showProfileMenu = !showProfileMenu">
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </button>
@@ -203,7 +203,7 @@ onMounted(() => {
 
   // Listen for on-chain InvestmentApproved events and auto-refresh
   cleanupListener = listenForApprovals((investmentId: number) => {
-    console.log(`⛓️ Investment #${investmentId} approved on-chain! Refreshing...`)
+    console.log(`Investment #${investmentId} approved on-chain. Refreshing...`)
     investmentStore.fetchInvestments()
   })
 })
@@ -319,12 +319,12 @@ async function handleConnectWallet() {
 /* ===== Layout ===== */
 .dashboard-layout {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--color-bg);
 }
 
 /* ===== Top Navbar ===== */
 .top-nav {
-  background: #1a1a1a;
+  background: var(--color-dark);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -332,6 +332,7 @@ async function handleConnectWallet() {
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .nav-btn {
@@ -339,8 +340,13 @@ async function handleConnectWallet() {
   border: none;
   cursor: pointer;
   color: white;
-  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  padding: 0.3rem;
+  border-radius: var(--radius-sm);
+  transition: background 200ms ease;
 }
+.nav-btn:hover { background: rgba(255,255,255,0.08); }
 
 .nav-right {
   position: relative;
@@ -350,28 +356,34 @@ async function handleConnectWallet() {
 }
 
 .wallet-badge {
-  background: rgba(246, 133, 27, 0.15);
-  color: #f6851b;
+  background: rgba(226, 118, 27, 0.12);
+  color: var(--color-metamask);
   padding: 0.3rem 0.7rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 0.78rem;
   font-weight: 700;
   font-family: monospace;
   cursor: default;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .btn-connect-wallet {
-  background: #f6851b;
+  background: var(--color-metamask);
   color: white;
   border: none;
   padding: 0.35rem 0.8rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 200ms ease;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
-.btn-connect-wallet:hover { background: #e2761b; }
+.btn-connect-wallet:hover { background: #c96516; }
 
 .profile-btn {
   display: flex;
@@ -382,43 +394,46 @@ async function handleConnectWallet() {
   position: absolute;
   right: 0;
   top: 45px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   padding: 1rem;
   min-width: 180px;
   z-index: 200;
+  animation: slideDown 0.2s ease;
 }
 
-.profile-name { font-weight: 700; color: #1a202c; margin-bottom: 0.2rem; }
-.profile-role { font-size: 0.85rem; color: #718096; }
-.profile-dropdown hr { border: none; border-top: 1px solid #e2e8f0; margin: 0.7rem 0; }
+.profile-name { font-weight: 700; color: var(--color-text); margin-bottom: 0.2rem; }
+.profile-role { font-size: 0.85rem; color: var(--color-text-secondary); }
+.profile-dropdown hr { border: none; border-top: 1px solid var(--color-border); margin: 0.7rem 0; }
 
 .dropdown-logout {
   width: 100%;
-  background: #e53e3e;
+  background: var(--color-error);
   color: white;
   border: none;
   padding: 0.5rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: 600;
-  transition: background 0.2s;
+  transition: background 200ms ease;
 }
-.dropdown-logout:hover { background: #c53030; }
+.dropdown-logout:hover { background: #dc2626; }
 
 /* ===== Main Content ===== */
 .main-content {
   padding: 2rem 2.5rem;
   max-width: 1200px;
   margin: 0 auto;
+  animation: slideUp 0.5s ease;
 }
 
 .welcome-heading {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 800;
-  color: #1a202c;
+  color: var(--color-text);
   margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
 }
 
 /* ===== Summary Row ===== */
@@ -431,15 +446,17 @@ async function handleConnectWallet() {
 }
 
 .summary-card {
-  background: white;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
   padding: 1.2rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  border: 1px solid #edf2f7;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  transition: box-shadow 200ms ease, transform 200ms ease;
 }
+.summary-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
 
 .summary-icon {
   width: 52px;
@@ -451,9 +468,9 @@ async function handleConnectWallet() {
   flex-shrink: 0;
 }
 
-.icon-green { background: #c6f6d5; color: #276749; }
-.icon-blue { background: #bee3f8; color: #2b6cb0; }
-.icon-orange { background: #feebc8; color: #c05621; }
+.icon-green { background: var(--color-success-bg); color: var(--color-success-text); }
+.icon-blue { background: var(--color-info-bg); color: var(--color-info); }
+.icon-orange { background: var(--color-warning-bg); color: var(--color-warning-text); }
 
 .summary-info {
   display: flex;
@@ -473,10 +490,10 @@ async function handleConnectWallet() {
 }
 
 .add-investment-btn {
-  background: #1a1a1a;
+  background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 1rem 1.5rem;
   font-size: 0.95rem;
   font-weight: 700;
@@ -484,11 +501,11 @@ async function handleConnectWallet() {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: background 0.2s;
+  transition: background 200ms ease, transform 150ms ease;
   white-space: nowrap;
 }
 
-.add-investment-btn:hover { background: #333; }
+.add-investment-btn:hover { background: var(--color-primary-hover); transform: translateY(-1px); }
 
 .add-icon {
   font-size: 1.4rem;
@@ -512,12 +529,14 @@ async function handleConnectWallet() {
 }
 
 .card {
-  background: white;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
   padding: 1.2rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  border: 1px solid #edf2f7;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  transition: box-shadow 200ms ease;
 }
+.card:hover { box-shadow: var(--shadow-lg); }
 
 .card-title {
   font-size: 0.95rem;
@@ -657,9 +676,9 @@ th {
   letter-spacing: 0.03em;
 }
 
-.badge-pending { background: #fefcbf; color: #b7791f; }
-.badge-approved { background: #c6f6d5; color: #276749; }
-.badge-rejected { background: #fed7d7; color: #c53030; }
+.badge-pending { background: var(--color-warning-bg); color: var(--color-warning-text); }
+.badge-approved { background: var(--color-success-bg); color: var(--color-success-text); }
+.badge-rejected { background: var(--color-error-bg); color: var(--color-error-text); }
 
 .empty-table {
   text-align: center;
@@ -673,19 +692,22 @@ th {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 500;
+  animation: fadeIn 0.2s ease;
 }
 
 .modal {
-  background: white;
-  border-radius: 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
   padding: 2rem;
   width: 420px;
   max-width: 90vw;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-xl);
+  animation: scaleIn 0.25s ease;
 }
 
 .modal h2 {
@@ -743,13 +765,13 @@ th {
 .btn-submit {
   flex: 1;
   padding: 0.6rem;
-  background: #1a1a1a;
+  background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: 600;
-  transition: background 0.2s;
+  transition: background 200ms ease;
 }
 .btn-submit:hover { background: #333; }
 .btn-submit:disabled { background: #a0aec0; cursor: not-allowed; }

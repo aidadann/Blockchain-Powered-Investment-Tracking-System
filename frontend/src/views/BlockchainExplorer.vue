@@ -2,9 +2,9 @@
   <div class="explorer-layout">
     <!-- Top Navbar -->
     <nav class="top-nav">
-      <button class="nav-btn">☰</button>
-      <span class="nav-title">⛓️ Blockchain Explorer</span>
-      <button class="nav-btn nav-back" @click="router.back()">← Back</button>
+      <button class="nav-btn" aria-label="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <span class="nav-title">Blockchain Explorer</span>
+      <button class="nav-btn nav-back" @click="router.back()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back</button>
     </nav>
 
     <main class="main-content">
@@ -14,19 +14,19 @@
       <!-- Network Info Cards -->
       <div class="info-row">
         <div class="info-card">
-          <div class="info-label">🌐 Network</div>
+          <div class="info-label">Network</div>
           <div class="info-value">Hardhat Local (Chain ID: 31337)</div>
         </div>
         <div class="info-card">
-          <div class="info-label">📄 Contract Address</div>
+          <div class="info-label">Contract Address</div>
           <div class="info-value mono">{{ contractAddress }}</div>
         </div>
         <div class="info-card">
-          <div class="info-label">🧱 Latest Block</div>
+          <div class="info-label">Latest Block</div>
           <div class="info-value">{{ latestBlock !== null ? '#' + latestBlock : 'Loading...' }}</div>
         </div>
         <div class="info-card">
-          <div class="info-label">📊 Investments On-Chain</div>
+          <div class="info-label">Investments On-Chain</div>
           <div class="info-value">{{ onChainInvestments.length }}</div>
         </div>
       </div>
@@ -36,12 +36,12 @@
         <div class="card-header">
           <h2>On-Chain vs Database Cross-Reference</h2>
           <button class="btn-refresh" @click="loadData" :disabled="isLoading">
-            {{ isLoading ? 'Reading chain...' : '🔄 Refresh' }}
+            {{ isLoading ? 'Reading chain...' : 'Refresh' }}
           </button>
         </div>
         <p class="card-desc">
           The table below compares the database record (off-chain) with the actual smart contract state (on-chain).
-          A ✅ match proves the blockchain data is authentic and untampered.
+          A match proves the blockchain data is authentic and untampered.
         </p>
 
         <p v-if="isLoading" class="loading-msg">Connecting to local Hardhat node at http://127.0.0.1:8545...</p>
@@ -76,9 +76,9 @@
                 </td>
                 <td class="match-cell">
                   <span v-if="row.chain_found" :class="row.match ? 'match-yes' : 'match-no'">
-                    {{ row.match ? '✅ Match' : '❌ Mismatch' }}
+                    {{ row.match ? 'Match' : 'Mismatch' }}
                   </span>
-                  <span v-else class="match-na">— N/A</span>
+                  <span v-else class="match-na">N/A</span>
                 </td>
                 <td class="hash-cell">
                   <span v-if="row.blockchain_hash" class="hash-text" :title="row.blockchain_hash">
@@ -119,7 +119,7 @@
                 <td>{{ inv.assetName }}</td>
                 <td>
                   <span :class="inv.isApproved ? 'badge badge-approved' : 'badge badge-pending'">
-                    {{ inv.isApproved ? '✅ Yes' : '⏳ No' }}
+                    {{ inv.isApproved ? 'Yes' : 'No' }}
                   </span>
                 </td>
               </tr>
@@ -227,12 +227,12 @@ async function loadData() {
 <style scoped>
 .explorer-layout {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--color-bg);
 }
 
 /* ===== Navbar ===== */
 .top-nav {
-  background: #1a1a1a;
+  background: var(--color-dark);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -240,6 +240,7 @@ async function loadData() {
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .nav-btn {
@@ -247,8 +248,13 @@ async function loadData() {
   border: none;
   cursor: pointer;
   color: white;
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  padding: 0.3rem;
+  border-radius: var(--radius-sm);
+  transition: background 200ms ease;
 }
+.nav-btn:hover { background: rgba(255,255,255,0.08); }
 
 .nav-title {
   color: white;
@@ -257,9 +263,12 @@ async function loadData() {
 }
 
 .nav-back {
-  font-size: 0.9rem;
-  color: #a0aec0;
-  transition: color 0.2s;
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  transition: color 200ms ease;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 .nav-back:hover { color: white; }
 
@@ -268,13 +277,15 @@ async function loadData() {
   padding: 2rem 2.5rem;
   max-width: 1200px;
   margin: 0 auto;
+  animation: slideUp 0.5s ease;
 }
 
 .welcome-heading {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 800;
-  color: #1a202c;
+  color: var(--color-text);
   margin-bottom: 0.3rem;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
@@ -292,12 +303,14 @@ async function loadData() {
 }
 
 .info-card {
-  background: white;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
   padding: 1rem 1.2rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  border: 1px solid #edf2f7;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  transition: box-shadow 200ms ease;
 }
+.info-card:hover { box-shadow: var(--shadow-lg); }
 
 .info-label {
   font-size: 0.78rem;
@@ -318,13 +331,15 @@ async function loadData() {
 
 /* ===== Cards ===== */
 .card {
-  background: white;
-  border-radius: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  border: 1px solid #edf2f7;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  transition: box-shadow 200ms ease;
 }
+.card:hover { box-shadow: var(--shadow-lg); }
 
 .card h2 {
   font-size: 1.1rem;
@@ -357,18 +372,18 @@ code {
 
 .btn-refresh {
   padding: 0.45rem 1rem;
-  background: #1a1a1a;
+  background: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: 600;
   font-size: 0.85rem;
-  transition: background 0.2s;
+  transition: background 200ms ease, transform 150ms ease;
   white-space: nowrap;
 }
-.btn-refresh:hover { background: #333; }
-.btn-refresh:disabled { background: #a0aec0; cursor: not-allowed; }
+.btn-refresh:hover { background: var(--color-primary-hover); transform: translateY(-1px); }
+.btn-refresh:disabled { background: var(--color-text-muted); cursor: not-allowed; transform: none; }
 
 /* ===== Table ===== */
 .table-wrapper { overflow-x: auto; }
@@ -401,14 +416,14 @@ th {
   font-weight: 700;
   text-transform: uppercase;
 }
-.badge-pending { background: #fefcbf; color: #b7791f; }
-.badge-approved { background: #c6f6d5; color: #276749; }
-.badge-rejected { background: #fed7d7; color: #c53030; }
-.badge-missing { background: #e2e8f0; color: #4a5568; }
+.badge-pending { background: var(--color-warning-bg); color: var(--color-warning-text); }
+.badge-approved { background: var(--color-success-bg); color: var(--color-success-text); }
+.badge-rejected { background: var(--color-error-bg); color: var(--color-error-text); }
+.badge-missing { background: var(--color-border-light); color: var(--color-text-secondary); }
 
-.match-yes { color: #276749; font-weight: 700; }
-.match-no { color: #c53030; font-weight: 700; }
-.match-na { color: #a0aec0; }
+.match-yes { color: var(--color-success-text); font-weight: 700; background: var(--color-success-bg); padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); }
+.match-no { color: var(--color-error-text); font-weight: 700; background: var(--color-error-bg); padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); }
+.match-na { color: var(--color-text-muted); }
 
 .hash-cell { max-width: 200px; }
 .hash-text {

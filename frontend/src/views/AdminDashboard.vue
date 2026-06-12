@@ -1,18 +1,27 @@
 <template>
   <div class="dashboard-layout">
-    <!-- Top Navbar -->
     <nav class="top-nav">
-      <button class="nav-btn">
-        <span class="hamburger">☰</span>
-      </button>
+      <div class="nav-left">
+        <button class="nav-btn" aria-label="Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="nav-brand">Investment Tracker</span>
+      </div>
       <div class="nav-right">
         <div v-if="walletAddress" class="wallet-badge" :title="walletAddress">
-          🦊 {{ walletAddress.slice(0, 6) }}...{{ walletAddress.slice(-4) }}
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16m14 0H5m14 0l2 0M5 21l-2 0M9 7h1m-1 4h1m4-4h1m-1 4h1"/></svg>
+          {{ walletAddress.slice(0, 6) }}...{{ walletAddress.slice(-4) }}
         </div>
-        <button v-else class="btn-connect-wallet" @click="handleConnectWallet">🦊 Connect Wallet</button>
-        <router-link to="/explorer" class="explorer-link">⛓️ Explorer</router-link>
+        <button v-else class="btn-connect-wallet" @click="handleConnectWallet">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16m14 0H5m14 0l2 0M5 21l-2 0M9 7h1m-1 4h1m4-4h1m-1 4h1"/></svg>
+          Connect Wallet
+        </button>
+        <router-link to="/explorer" class="explorer-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Explorer
+        </router-link>
         <button class="nav-btn profile-btn" @click="showProfileMenu = !showProfileMenu">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </button>
         <div v-if="showProfileMenu" class="profile-dropdown">
           <p class="profile-name">{{ auth.user?.name }}</p>
@@ -23,39 +32,26 @@
       </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="main-content">
       <h1 class="welcome-heading">Welcome back, Admin</h1>
 
       <div class="top-row">
-        <!-- Approval Statistics (Donut Chart) -->
         <div class="card stats-card">
           <h3 class="card-title">Approval Statistics</h3>
           <div class="donut-container">
             <svg viewBox="0 0 180 180" class="donut-svg">
-              <!-- Background circle -->
-              <circle cx="90" cy="90" r="70" fill="none" stroke="#edf2f7" stroke-width="22" />
-              <!-- Approved arc -->
-              <circle cx="90" cy="90" r="70" fill="none" stroke="#38a169" stroke-width="22"
+              <circle cx="90" cy="90" r="70" fill="none" stroke="var(--color-border-light)" stroke-width="22" />
+              <circle cx="90" cy="90" r="70" fill="none" stroke="var(--color-success)" stroke-width="22"
                 :stroke-dasharray="approvedArc + ' ' + (440 - approvedArc)"
-                stroke-dashoffset="110"
-                stroke-linecap="round"
-              />
-              <!-- Rejected arc -->
-              <circle cx="90" cy="90" r="70" fill="none" stroke="#e53e3e" stroke-width="22"
+                stroke-dashoffset="110" stroke-linecap="round" />
+              <circle cx="90" cy="90" r="70" fill="none" stroke="var(--color-error)" stroke-width="22"
                 :stroke-dasharray="rejectedArc + ' ' + (440 - rejectedArc)"
-                :stroke-dashoffset="110 - approvedArc"
-                stroke-linecap="round"
-              />
-              <!-- Pending arc -->
-              <circle cx="90" cy="90" r="70" fill="none" stroke="#ecc94b" stroke-width="22"
+                :stroke-dashoffset="110 - approvedArc" stroke-linecap="round" />
+              <circle cx="90" cy="90" r="70" fill="none" stroke="var(--color-warning)" stroke-width="22"
                 :stroke-dasharray="pendingArc + ' ' + (440 - pendingArc)"
-                :stroke-dashoffset="110 - approvedArc - rejectedArc"
-                stroke-linecap="round"
-              />
-              <!-- Center text -->
-              <text x="90" y="82" text-anchor="middle" font-size="32" font-weight="800" fill="#1a202c">{{ totalCount }}</text>
-              <text x="90" y="102" text-anchor="middle" font-size="12" fill="#38a169" font-weight="600">Approval</text>
+                :stroke-dashoffset="110 - approvedArc - rejectedArc" stroke-linecap="round" />
+              <text x="90" y="82" text-anchor="middle" font-size="32" font-weight="800" fill="var(--color-text)">{{ totalCount }}</text>
+              <text x="90" y="102" text-anchor="middle" font-size="12" fill="var(--color-success)" font-weight="600">Approval</text>
             </svg>
           </div>
           <div class="donut-legend">
@@ -65,9 +61,7 @@
           </div>
         </div>
 
-        <!-- Right Column -->
         <div class="right-column">
-          <!-- Pending Approvals -->
           <div class="card pending-card">
             <h3 class="card-title">Pending Approval</h3>
             <div class="pending-list">
@@ -78,25 +72,20 @@
                   <span class="pending-asset">{{ inv.asset_name }}</span>
                 </div>
                 <div class="action-buttons">
-                  <button class="btn-approve" @click="handleApprove(inv.id)" :disabled="investmentStore.isLoading">
-                    Approve
-                  </button>
-                  <button class="btn-reject" @click="handleReject(inv.id)" :disabled="investmentStore.isLoading">
-                    Reject
-                  </button>
+                  <button class="btn-approve" @click="handleApprove(inv.id)" :disabled="investmentStore.isLoading">Approve</button>
+                  <button class="btn-reject" @click="handleReject(inv.id)" :disabled="investmentStore.isLoading">Reject</button>
                 </div>
               </div>
               <p v-if="pendingInvestments.length === 0" class="empty-list">No pending approvals.</p>
             </div>
           </div>
 
-          <!-- Manage Users (All investments as user list) -->
           <div class="card users-card">
             <h3 class="card-title">Manage Users</h3>
             <div class="user-list">
               <div v-for="inv in investmentStore.investments" :key="inv.id" class="user-item">
                 <div class="user-avatar">{{ getInitial(inv) }}</div>
-                <div class="user-name">Investor #{{ inv.user_id }} — {{ inv.asset_name }}</div>
+                <div class="user-name">Investor #{{ inv.user_id }} -- {{ inv.asset_name }}</div>
                 <span :class="'mini-badge mini-' + inv.status">{{ inv.status }}</span>
               </div>
               <p v-if="investmentStore.investments.length === 0" class="empty-list">No users found.</p>
@@ -105,10 +94,9 @@
         </div>
       </div>
 
-      <!-- Notifications -->
       <div class="card notifications-card">
         <div class="notif-header">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4a5568" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span class="notif-count">{{ pendingInvestments.length }}</span>
         </div>
         <p class="notif-title">Notifications</p>
@@ -143,10 +131,8 @@ let cleanupListener: (() => void) | null = null
 
 onMounted(() => {
   investmentStore.fetchInvestments()
-
-  // Listen for on-chain InvestmentApproved events and auto-refresh
   cleanupListener = listenForApprovals((investmentId: number) => {
-    console.log(`⛓️ Investment #${investmentId} approved on-chain! Refreshing...`)
+    console.log(`Investment #${investmentId} approved on-chain. Refreshing...`)
     investmentStore.fetchInvestments()
   })
 })
@@ -156,385 +142,108 @@ onUnmounted(() => {
 })
 
 const totalCount = computed(() => investmentStore.investments.length)
-
 const approvedCount = computed(() => investmentStore.investments.filter((i: any) => i.status === 'approved').length)
 const rejectedCount = computed(() => investmentStore.investments.filter((i: any) => i.status === 'rejected').length)
 const pendingCountVal = computed(() => investmentStore.investments.filter((i: any) => i.status === 'pending').length)
-
 const circumference = 440
+const approvedArc = computed(() => { if (totalCount.value === 0) return 0; return (approvedCount.value / totalCount.value) * circumference })
+const rejectedArc = computed(() => { if (totalCount.value === 0) return 0; return (rejectedCount.value / totalCount.value) * circumference })
+const pendingArc = computed(() => { if (totalCount.value === 0) return 0; return (pendingCountVal.value / totalCount.value) * circumference })
+const pendingInvestments = computed(() => investmentStore.investments.filter((i: any) => i.status === 'pending'))
 
-const approvedArc = computed(() => {
-  if (totalCount.value === 0) return 0
-  return (approvedCount.value / totalCount.value) * circumference
-})
-
-const rejectedArc = computed(() => {
-  if (totalCount.value === 0) return 0
-  return (rejectedCount.value / totalCount.value) * circumference
-})
-
-const pendingArc = computed(() => {
-  if (totalCount.value === 0) return 0
-  return (pendingCountVal.value / totalCount.value) * circumference
-})
-
-const pendingInvestments = computed(() => {
-  return investmentStore.investments.filter((i: any) => i.status === 'pending')
-})
-
-function getInitial(inv: any) {
-  return inv.asset_name?.charAt(0)?.toUpperCase() || '?'
-}
+function getInitial(inv: any) { return inv.asset_name?.charAt(0)?.toUpperCase() || '?' }
 
 async function handleApprove(id: number) {
   successMsg.value = ''
   const ok = await investmentStore.approveInvestment(id)
-  if (ok) {
-    successMsg.value = `Investment #${id} approved successfully!`
-    setTimeout(() => { successMsg.value = '' }, 3000)
-  }
+  if (ok) { successMsg.value = `Investment #${id} approved successfully!`; setTimeout(() => { successMsg.value = '' }, 3000) }
 }
-
 async function handleReject(id: number) {
   successMsg.value = ''
   const ok = await investmentStore.rejectInvestment(id)
-  if (ok) {
-    successMsg.value = `Investment #${id} rejected successfully!`
-    setTimeout(() => { successMsg.value = '' }, 3000)
-  }
+  if (ok) { successMsg.value = `Investment #${id} rejected successfully!`; setTimeout(() => { successMsg.value = '' }, 3000) }
 }
-
-async function handleLogout() {
-  await auth.logout()
-  router.push('/login')
-}
-
+async function handleLogout() { await auth.logout(); router.push('/login') }
 async function handleConnectWallet() {
-  try {
-    walletAddress.value = await connectWallet()
-  } catch (err: any) {
-    console.warn('MetaMask connection failed:', err.message)
-  }
+  try { walletAddress.value = await connectWallet() } catch (err: any) { console.warn('MetaMask connection failed:', err.message) }
 }
 </script>
 
 <style scoped>
-.dashboard-layout {
-  min-height: 100vh;
-  background: #f5f5f5;
-}
+.dashboard-layout { min-height: 100vh; background: var(--color-bg); }
 
-/* ===== Top Navbar ===== */
-.top-nav {
-  background: #1a1a1a;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.6rem 1.5rem;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
+.top-nav { background: var(--color-dark); display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 1.5rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.nav-left { display: flex; align-items: center; gap: 0.75rem; }
+.nav-brand { color: white; font-weight: 700; font-size: 1rem; letter-spacing: -0.01em; }
+.nav-btn { background: none; border: none; cursor: pointer; color: white; display: flex; align-items: center; padding: 0.3rem; border-radius: var(--radius-sm); transition: background 200ms ease; }
+.nav-btn:hover { background: rgba(255,255,255,0.08); }
+.nav-right { position: relative; display: flex; align-items: center; gap: 0.7rem; }
 
-.nav-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: white;
-  font-size: 1.4rem;
-}
+.wallet-badge { background: rgba(226, 118, 27, 0.12); color: var(--color-metamask); padding: 0.3rem 0.7rem; border-radius: var(--radius-sm); font-size: 0.78rem; font-weight: 700; font-family: monospace; cursor: default; display: flex; align-items: center; gap: 0.35rem; }
+.btn-connect-wallet { background: var(--color-metamask); color: white; border: none; padding: 0.35rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: background 200ms ease; display: flex; align-items: center; gap: 0.35rem; }
+.btn-connect-wallet:hover { background: #c96516; }
 
-.nav-right { position: relative; display: flex; align-items: center; gap: 0.8rem; }
-
-.wallet-badge {
-  background: rgba(246, 133, 27, 0.15);
-  color: #f6851b;
-  padding: 0.3rem 0.7rem;
-  border-radius: 8px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  font-family: monospace;
-  cursor: default;
-}
-
-.btn-connect-wallet {
-  background: #f6851b;
-  color: white;
-  border: none;
-  padding: 0.35rem 0.8rem;
-  border-radius: 8px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.btn-connect-wallet:hover { background: #e2761b; }
+.explorer-link { color: var(--color-text-muted); font-size: 0.82rem; font-weight: 600; text-decoration: none; padding: 0.35rem 0.7rem; border: 1px solid var(--color-dark-muted); border-radius: var(--radius-sm); transition: color 200ms ease, border-color 200ms ease; display: flex; align-items: center; gap: 0.35rem; }
+.explorer-link:hover { color: white; border-color: var(--color-text-muted); }
 
 .profile-btn { display: flex; align-items: center; }
+.profile-dropdown { position: absolute; right: 0; top: 45px; background: var(--color-surface); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); padding: 1rem; min-width: 180px; z-index: 200; animation: slideDown 0.2s ease; }
+.profile-name { font-weight: 700; color: var(--color-text); margin-bottom: 0.2rem; }
+.profile-role { font-size: 0.85rem; color: var(--color-text-secondary); }
+.profile-dropdown hr { border: none; border-top: 1px solid var(--color-border); margin: 0.7rem 0; }
+.dropdown-logout { width: 100%; background: var(--color-error); color: white; border: none; padding: 0.5rem; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; transition: background 200ms ease; }
+.dropdown-logout:hover { background: #dc2626; }
 
-.profile-dropdown {
-  position: absolute;
-  right: 0;
-  top: 45px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  padding: 1rem;
-  min-width: 180px;
-  z-index: 200;
-}
+.main-content { padding: 2rem 2.5rem; max-width: 1100px; margin: 0 auto; animation: slideUp 0.5s ease; }
+.welcome-heading { font-size: 1.75rem; font-weight: 800; color: var(--color-text); margin-bottom: 1.5rem; letter-spacing: -0.02em; }
 
-.profile-name { font-weight: 700; color: #1a202c; margin-bottom: 0.2rem; }
-.profile-role { font-size: 0.85rem; color: #718096; }
-.profile-dropdown hr { border: none; border-top: 1px solid #e2e8f0; margin: 0.7rem 0; }
+.top-row { display: grid; grid-template-columns: 1fr 1.6fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+.card { background: var(--color-surface); border-radius: var(--radius-lg); padding: 1.25rem; box-shadow: var(--shadow-md); border: 1px solid var(--color-border); transition: box-shadow 200ms ease, transform 200ms ease; }
+.card:hover { box-shadow: var(--shadow-lg); }
+.card-title { font-size: 0.9rem; font-weight: 700; color: var(--color-text); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
 
-.dropdown-logout {
-  width: 100%;
-  background: #e53e3e;
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-.dropdown-logout:hover { background: #c53030; }
+.donut-container { display: flex; justify-content: center; padding: 0.5rem 0; }
+.donut-svg { width: 180px; height: 180px; }
+.donut-legend { display: flex; justify-content: center; gap: 1.2rem; margin-top: 0.8rem; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; color: var(--color-text-secondary); font-weight: 600; }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+.dot-approved { background: var(--color-success); }
+.dot-rejected { background: var(--color-error); }
+.dot-pending { background: var(--color-warning); }
 
-/* ===== Main ===== */
-.main-content {
-  padding: 2rem 2.5rem;
-  max-width: 1100px;
-  margin: 0 auto;
-}
+.right-column { display: flex; flex-direction: column; gap: 1rem; }
+.pending-list { max-height: 200px; overflow-y: auto; }
+.pending-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 0; border-bottom: 1px solid var(--color-border-light); }
+.pending-avatar, .user-avatar { width: 36px; height: 36px; border-radius: var(--radius-full); background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
+.pending-info { display: flex; flex-direction: column; flex: 1; }
+.pending-name { font-weight: 600; color: var(--color-text); font-size: 0.88rem; }
+.pending-asset { font-size: 0.78rem; color: var(--color-info); }
+.action-buttons { display: flex; gap: 0.4rem; }
+.btn-approve { padding: 0.3rem 0.7rem; background: var(--color-success); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 0.78rem; transition: background 200ms ease; }
+.btn-approve:hover { background: #059669; }
+.btn-approve:disabled { background: var(--color-text-muted); cursor: not-allowed; }
+.btn-reject { padding: 0.3rem 0.7rem; background: var(--color-error); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 0.78rem; transition: background 200ms ease; }
+.btn-reject:hover { background: #dc2626; }
+.btn-reject:disabled { background: var(--color-text-muted); cursor: not-allowed; }
 
-.welcome-heading {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #1a202c;
-  margin-bottom: 1.5rem;
-}
+.user-list { max-height: 280px; overflow-y: auto; }
+.user-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.55rem 0; border-bottom: 1px solid var(--color-border-light); }
+.user-name { flex: 1; font-size: 0.88rem; color: var(--color-text-secondary); font-weight: 500; }
+.mini-badge { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+.mini-pending { background: var(--color-warning-bg); color: var(--color-warning-text); }
+.mini-approved { background: var(--color-success-bg); color: var(--color-success-text); }
+.mini-rejected { background: var(--color-error-bg); color: var(--color-error-text); }
+.empty-list { color: var(--color-text-muted); font-style: italic; font-size: 0.85rem; padding: 0.5rem 0; }
 
-/* ===== Top Row ===== */
-.top-row {
-  display: grid;
-  grid-template-columns: 1fr 1.6fr;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
+.notifications-card { max-width: 340px; }
+.notif-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+.notif-count { font-size: 1.1rem; font-weight: 700; color: var(--color-primary); }
+.notif-title { font-size: 0.82rem; color: var(--color-text-muted); margin-bottom: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.notif-list { list-style: none; padding-left: 0; font-size: 0.82rem; color: var(--color-text-secondary); line-height: 1.7; }
+.notif-list li { padding: 0.3rem 0; padding-left: 1rem; position: relative; }
+.notif-list li::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; border-radius: 50%; background: var(--color-primary); }
+.global-success { color: var(--color-success); font-weight: 700; margin-top: 1rem; font-size: 0.93rem; background: var(--color-success-bg); padding: 0.5rem 1rem; border-radius: var(--radius-sm); }
 
-.card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.2rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  border: 1px solid #edf2f7;
-}
-
-.card-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 0.8rem;
-}
-
-/* ===== Donut Chart ===== */
-.donut-container {
-  display: flex;
-  justify-content: center;
-  padding: 0.5rem 0;
-}
-
-.donut-svg {
-  width: 180px;
-  height: 180px;
-}
-
-.donut-legend {
-  display: flex;
-  justify-content: center;
-  gap: 1.2rem;
-  margin-top: 0.8rem;
-  flex-wrap: wrap;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.82rem;
-  color: #4a5568;
-  font-weight: 600;
-}
-
-.legend-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-}
-
-.dot-approved { background: #38a169; }
-.dot-rejected { background: #e53e3e; }
-.dot-pending { background: #ecc94b; }
-
-/* ===== Right Column ===== */
-.right-column {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* Pending Approvals */
-.pending-list {
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.pending-item {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid #f7fafc;
-}
-
-.pending-avatar, .user-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: #4a5568;
-  font-size: 0.9rem;
-  flex-shrink: 0;
-}
-
-.pending-info {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.pending-name { font-weight: 600; color: #1a202c; font-size: 0.9rem; }
-.pending-asset { font-size: 0.8rem; color: #4299e1; }
-
-.btn-approve {
-  padding: 0.35rem 0.8rem;
-  background: #38a169;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.8rem;
-  transition: background 0.2s;
-}
-.btn-approve:hover { background: #2f855a; }
-.btn-approve:disabled { background: #a0aec0; cursor: not-allowed; }
-
-.action-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-reject {
-  padding: 0.35rem 0.8rem;
-  background: #e53e3e;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.8rem;
-  transition: background 0.2s;
-}
-.btn-reject:hover { background: #c53030; }
-.btn-reject:disabled { background: #a0aec0; cursor: not-allowed; }
-
-/* Users List */
-.user-list {
-  max-height: 280px;
-  overflow-y: auto;
-}
-
-.user-item {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid #f7fafc;
-}
-
-.user-name {
-  flex: 1;
-  font-size: 0.9rem;
-  color: #4a5568;
-  font-weight: 500;
-}
-
-.mini-badge {
-  font-size: 0.7rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.mini-pending { background: #fefcbf; color: #b7791f; }
-.mini-approved { background: #c6f6d5; color: #276749; }
-.mini-rejected { background: #fed7d7; color: #c53030; }
-
-.empty-list {
-  color: #a0aec0;
-  font-style: italic;
-  font-size: 0.85rem;
-  padding: 0.5rem 0;
-}
-
-/* ===== Notifications ===== */
-.notifications-card {
-  max-width: 320px;
-}
-
-.notif-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.3rem;
-}
-
-.notif-count {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #4299e1;
-}
-
-.notif-title {
-  font-size: 0.85rem;
-  color: #a0aec0;
-  margin-bottom: 0.7rem;
-}
-
-.notif-list {
-  list-style: disc;
-  padding-left: 1.2rem;
-  font-size: 0.82rem;
-  color: #4a5568;
-  line-height: 1.6;
-  word-wrap: break-word;
-  word-break: break-word;
-}
-
-.global-success {
-  color: #38a169;
-  font-weight: 700;
-  margin-top: 1rem;
-  font-size: 0.95rem;
-}
-
-/* ===== Responsive ===== */
 @media (max-width: 800px) {
   .top-row { grid-template-columns: 1fr; }
   .main-content { padding: 1.5rem 1rem; }
