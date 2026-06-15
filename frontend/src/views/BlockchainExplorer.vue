@@ -69,16 +69,16 @@
                   <span :class="'badge badge-' + row.db_status">{{ row.db_status }}</span>
                 </td>
                 <td>
-                  <span v-if="row.chain_found" :class="row.chain_approved ? 'badge badge-approved' : 'badge badge-pending'">
-                    {{ row.chain_approved ? 'approved' : 'pending' }}
-                  </span>
+                  <span v-if="row.chain_found && row.chain_approved" class="badge badge-approved">approved</span>
+                  <span v-else-if="row.chain_found && row.db_status === 'rejected'" class="badge badge-rejected">rejected</span>
+                  <span v-else-if="row.chain_found" class="badge badge-pending">pending</span>
+                  <span v-else-if="row.db_status === 'rejected'" class="badge badge-rejected">rejected</span>
                   <span v-else class="badge badge-missing">not found</span>
                 </td>
                 <td class="match-cell">
-                  <span v-if="row.chain_found" :class="row.match ? 'match-yes' : 'match-no'">
+                  <span :class="row.match ? 'match-yes' : 'match-no'">
                     {{ row.match ? 'Match' : 'Mismatch' }}
                   </span>
-                  <span v-else class="match-na">N/A</span>
                 </td>
                 <td class="hash-cell">
                   <span v-if="row.blockchain_hash" class="hash-text" :title="row.blockchain_hash">
@@ -200,6 +200,23 @@ async function loadData() {
       const chainApproved = chainRecord?.isApproved ?? false
       const chainFound = chainRecord !== null
 
+      // Determine match logic:
+      // - approved in DB + approved on-chain = Match
+      // - pending in DB + pending on-chain (not approved) = Match
+      // - rejected in DB + not approved on-chain = Match (rejection means not approved)
+      // - rejected in DB + not on-chain = Match (rejected investments may not exist on-chain)
+      // - Any other combination = Mismatch
+      let isMatch = false
+      if (chainFound) {
+        if (inv.status === 'rejected') {
+          isMatch = !chainApproved // Rejected should NOT be approved on-chain
+        } else {
+          isMatch = dbApproved === chainApproved
+        }
+      } else if (inv.status === 'rejected') {
+        isMatch = true // Rejected and not on-chain is the expected correct state
+      }
+
       cross.push({
         id: inv.id,
         asset_name: inv.asset_name,
@@ -208,7 +225,7 @@ async function loadData() {
         blockchain_hash: inv.blockchain_hash,
         chain_found: chainFound,
         chain_approved: chainApproved,
-        match: chainFound && dbApproved === chainApproved
+        match: isMatch
       })
     }
 

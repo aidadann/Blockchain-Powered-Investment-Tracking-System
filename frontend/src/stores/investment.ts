@@ -36,7 +36,7 @@ export const useInvestmentStore = defineStore('investment', {
 
                 const investment = response.data.investment;
 
-                // Step 2: Record on blockchain using the database ID
+                // Step 2: Record on blockchain using the database ID (REQUIRED)
                 try {
                     const txHash = await submitInvestmentOnChain(
                         investment.id,
@@ -51,11 +51,18 @@ export const useInvestmentStore = defineStore('investment', {
 
                     investment.blockchain_hash = txHash;
                 } catch (blockchainError: any) {
-                    console.warn('Blockchain recording failed (investment saved to DB):', blockchainError.message);
-                    // Investment is still saved in the database even if blockchain fails
+                    // MetaMask was rejected or closed — roll back the off-chain record
+                    console.warn('MetaMask transaction failed. Rolling back database record:', blockchainError.message);
+                    try {
+                        await api.delete('/investments/' + investment.id);
+                    } catch (deleteError: any) {
+                        console.error('Failed to roll back investment record:', deleteError.message);
+                    }
+                    this.error = 'MetaMask transaction was not completed. Investment was not submitted. Please try again and complete the MetaMask confirmation.';
+                    return false;
                 }
 
-                // Add to local state
+                // Add to local state only after successful blockchain recording
                 this.investments.push(investment);
                 return true;
             } catch (error: any) {
@@ -71,25 +78,18 @@ export const useInvestmentStore = defineStore('investment', {
             this.isLoading = true;
             this.error = null;
             try {
-                // Step 1: Record approval on blockchain first
-                let txHash = '';
-                try {
-                    txHash = await approveInvestmentOnChain(id);
-                } catch (blockchainError: any) {
-                    console.warn('Blockchain approval failed:', blockchainError.message);
-                    // Continue with database approval even if blockchain fails
-                }
+                // Step 1: Record approval on blockchain first (REQUIRED)
+                // If MetaMask is cancelled/rejected, this will throw and skip Step 2 entirely
+                const txHash = await approveInvestmentOnChain(id);
 
-                // Step 2: Approve in Laravel database
+                // Step 2: Approve in Laravel database (only runs if MetaMask succeeded)
                 const response = await api.patch('/investments/' + id + '/approve');
 
-                // Update the blockchain hash if we got one
-                if (txHash) {
-                    await api.patch('/investments/' + id + '/hash', {
-                        blockchain_hash: txHash
-                    });
-                    response.data.investment.blockchain_hash = txHash;
-                }
+                // Step 3: Update the blockchain hash
+                await api.patch('/investments/' + id + '/hash', {
+                    blockchain_hash: txHash
+                });
+                response.data.investment.blockchain_hash = txHash;
 
                 // Update local state
                 const index = this.investments.findIndex((inv) => inv.id === id);
@@ -98,8 +98,8 @@ export const useInvestmentStore = defineStore('investment', {
                 }
                 return true;
             } catch (error: any) {
-                this.error = error.response?.data?.message || 'Failed to approve investment';
-                console.error(error);
+                this.error = error.response?.data?.message || 'MetaMask transaction was not completed. Approval was not processed. Please try again.';
+                console.error('Approve failed:', error);
                 return false;
             } finally {
                 this.isLoading = false;

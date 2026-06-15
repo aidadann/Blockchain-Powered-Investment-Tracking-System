@@ -13,6 +13,7 @@ async function main() {
     await tracker.waitForDeployment();
 
     console.log(`InvestmentTracker deployed to: ${await tracker.getAddress()}`);
+    process.exit(0);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

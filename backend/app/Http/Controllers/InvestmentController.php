@@ -103,5 +103,29 @@ class InvestmentController extends Controller
 
         return response()->json(['message' => 'Hash updated', 'investment' => $investment]);
     }
+
+    public function destroy(Request $request, $id)
+    {
+        $investment = Investment::findOrFail($id);
+
+        // Only allow deletion of pending investments by the original submitter
+        if ($investment->status !== 'pending') {
+            return response()->json(['message' => 'Only pending investments can be deleted'], 400);
+        }
+
+        if ($investment->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $investment->delete();
+
+        AuditLog::create([
+            'user_id' => $request->user()->id,
+            'action' => 'Investment Rolled Back',
+            'details' => 'Investment ID: ' . $id . ' was rolled back due to incomplete MetaMask transaction.',
+        ]);
+
+        return response()->json(['message' => 'Investment deleted']);
+    }
 }
 

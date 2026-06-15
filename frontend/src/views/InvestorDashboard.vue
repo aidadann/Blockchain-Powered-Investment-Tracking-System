@@ -34,7 +34,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           </div>
           <div class="summary-info">
-            <span class="summary-value">${{ totalInvestment }}</span>
+            <span class="summary-value">{{ totalInvestment }}</span>
             <span class="summary-label">Total Investment</span>
           </div>
         </div>
@@ -44,7 +44,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><path d="M21 3v6h-6"/></svg>
           </div>
           <div class="summary-info">
-            <span class="summary-value">${{ approvedTotal }}</span>
+            <span class="summary-value">{{ approvedTotal }}</span>
             <span class="summary-label">Total Balance</span>
           </div>
         </div>
@@ -214,7 +214,9 @@ onUnmounted(() => {
 
 // Computed values for summary cards
 const totalInvestment = computed(() => {
-  const total = investmentStore.investments.reduce((sum: number, inv: any) => sum + Number(inv.amount), 0)
+  const total = investmentStore.investments
+    .filter((inv: any) => inv.status !== 'rejected')
+    .reduce((sum: number, inv: any) => sum + Number(inv.amount), 0)
   return total >= 1000000 ? 'RM ' + (total / 1000000).toFixed(1) + 'M' : 'RM ' + total.toLocaleString('ms-MY')
 })
 
