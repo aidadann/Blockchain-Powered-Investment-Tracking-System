@@ -142,7 +142,7 @@ import api from '../api'
 
 const router = useRouter()
 
-const CONTRACT_ADDRESS = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+const CONTRACT_ADDRESS = '0x5eB8f731c49211Ac77c58E77befd984972512738'
 const contractAddress = ref(CONTRACT_ADDRESS)
 const latestBlock = ref<number | null>(null)
 const isLoading = ref(false)
