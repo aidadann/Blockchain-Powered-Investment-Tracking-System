@@ -2,8 +2,10 @@
   <div class="explorer-layout">
     <!-- Top Navbar -->
     <nav class="top-nav">
-      <button class="nav-btn" aria-label="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-      <span class="nav-title">Blockchain Explorer</span>
+      <div class="nav-left">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span class="nav-title">Blockchain Explorer</span>
+      </div>
       <button class="nav-btn nav-back" @click="router.back()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back</button>
     </nav>
 
@@ -273,6 +275,7 @@ async function loadData() {
 }
 .nav-btn:hover { background: rgba(255,255,255,0.08); }
 
+.nav-left { display: flex; align-items: center; gap: 0.75rem; }
 .nav-title {
   color: white;
   font-weight: 700;

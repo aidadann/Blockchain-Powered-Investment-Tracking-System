@@ -2,9 +2,7 @@
   <div class="dashboard-layout">
     <nav class="top-nav">
       <div class="nav-left">
-        <button class="nav-btn" aria-label="Menu">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
         <span class="nav-brand">Investment Tracker</span>
       </div>
       <div class="nav-right">
@@ -64,6 +62,10 @@
         <div class="right-column">
           <div class="card pending-card">
             <h3 class="card-title">Pending Approval</h3>
+            <div v-if="!walletAddress" class="wallet-required">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span>Connect your wallet to approve or reject investments</span>
+            </div>
             <div class="pending-list">
               <div v-for="inv in pendingInvestments" :key="inv.id" class="pending-item">
                 <div class="pending-avatar">{{ getInitial(inv) }}</div>
@@ -72,8 +74,8 @@
                   <span class="pending-asset">{{ inv.asset_name }}</span>
                 </div>
                 <div class="action-buttons">
-                  <button class="btn-approve" @click="handleApprove(inv.id)" :disabled="investmentStore.isLoading">Approve</button>
-                  <button class="btn-reject" @click="handleReject(inv.id)" :disabled="investmentStore.isLoading">Reject</button>
+                  <button class="btn-approve" @click="handleApprove(inv.id)" :disabled="investmentStore.isLoading || !walletAddress">Approve</button>
+                  <button class="btn-reject" @click="handleReject(inv.id)" :disabled="investmentStore.isLoading || !walletAddress">Reject</button>
                 </div>
               </div>
               <p v-if="pendingInvestments.length === 0" class="empty-list">No pending approvals.</p>
@@ -243,6 +245,8 @@ async function handleConnectWallet() {
 .notif-list li { padding: 0.3rem 0; padding-left: 1rem; position: relative; }
 .notif-list li::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; border-radius: 50%; background: var(--color-primary); }
 .global-success { color: var(--color-success); font-weight: 700; margin-top: 1rem; font-size: 0.93rem; background: var(--color-success-bg); padding: 0.5rem 1rem; border-radius: var(--radius-sm); }
+
+.wallet-required { display: flex; align-items: center; gap: 0.5rem; background: var(--color-warning-bg); color: var(--color-warning-text); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 600; margin-bottom: 0.75rem; border: 1px solid rgba(245, 158, 11, 0.2); }
 
 @media (max-width: 800px) {
   .top-row { grid-template-columns: 1fr; }

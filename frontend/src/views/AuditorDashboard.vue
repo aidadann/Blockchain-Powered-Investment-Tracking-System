@@ -2,9 +2,10 @@
   <div class="dashboard-layout">
     <!-- Top Navbar -->
     <nav class="top-nav">
-      <button class="nav-btn" aria-label="Menu">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
+      <div class="nav-left">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span class="nav-brand">Investment Tracker</span>
+      </div>
       <div class="nav-right">
         <router-link to="/explorer" class="explorer-link"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Explorer</router-link>
         <button class="nav-btn profile-btn" @click="showProfileMenu = !showProfileMenu">
@@ -199,6 +200,8 @@ async function handleLogout() {
 }
 .nav-btn:hover { background: rgba(255,255,255,0.08); }
 
+.nav-left { display: flex; align-items: center; gap: 0.75rem; }
+.nav-brand { color: white; font-weight: 700; font-size: 1rem; letter-spacing: -0.01em; }
 .nav-right { position: relative; display: flex; align-items: center; gap: 0.7rem; }
 .explorer-link { color: var(--color-text-muted); font-size: 0.82rem; font-weight: 600; text-decoration: none; padding: 0.35rem 0.7rem; border: 1px solid var(--color-dark-muted); border-radius: var(--radius-sm); transition: color 200ms ease, border-color 200ms ease; display: flex; align-items: center; gap: 0.35rem; }
 .explorer-link:hover { color: white; border-color: var(--color-text-muted); }

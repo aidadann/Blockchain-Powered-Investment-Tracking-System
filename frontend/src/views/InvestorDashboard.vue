@@ -2,9 +2,10 @@
   <div class="dashboard-layout">
     <!-- Top Navbar -->
     <nav class="top-nav">
-      <button class="nav-btn" @click="sidebarOpen = !sidebarOpen" aria-label="Menu">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
+      <div class="nav-left">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span class="nav-brand">Investment Tracker</span>
+      </div>
       <div class="nav-right">
         <div v-if="walletAddress" class="wallet-badge" :title="walletAddress">
           {{ walletAddress.slice(0, 6) }}...{{ walletAddress.slice(-4) }}
@@ -155,6 +156,10 @@
     <div v-if="showForm" class="modal-overlay" @click.self="showForm = false">
       <div class="modal">
         <h2>Add New Investment</h2>
+        <div v-if="!walletAddress" class="wallet-required">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Connect your wallet before submitting an investment</span>
+        </div>
         <form @submit.prevent="handleSubmit">
           <div class="form-group">
             <label>Asset Name</label>
@@ -166,7 +171,7 @@
           </div>
           <div class="modal-actions">
             <button type="button" class="btn-cancel" @click="showForm = false">Cancel</button>
-            <button type="submit" class="btn-submit" :disabled="investmentStore.isLoading">
+            <button type="submit" class="btn-submit" :disabled="investmentStore.isLoading || !walletAddress">
               {{ investmentStore.isLoading ? 'Submitting...' : 'Submit' }}
             </button>
           </div>
@@ -191,7 +196,6 @@ const investmentStore = useInvestmentStore()
 
 const showForm = ref(false)
 const showProfileMenu = ref(false)
-const sidebarOpen = ref(false)
 const assetName = ref('')
 const amount = ref<number | null>(null)
 const successMsg = ref('')
@@ -780,6 +784,10 @@ th {
 
 .success-msg { color: #38a169; margin-top: 0.75rem; font-weight: 600; font-size: 0.9rem; }
 .error-msg { color: #e53e3e; margin-top: 0.75rem; font-weight: 600; font-size: 0.9rem; }
+
+.nav-left { display: flex; align-items: center; gap: 0.75rem; }
+.nav-brand { color: white; font-weight: 700; font-size: 1rem; letter-spacing: -0.01em; }
+.wallet-required { display: flex; align-items: center; gap: 0.5rem; background: var(--color-warning-bg); color: var(--color-warning-text); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 600; margin-bottom: 0.75rem; border: 1px solid rgba(245, 158, 11, 0.2); }
 
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
