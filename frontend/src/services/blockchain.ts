@@ -43,7 +43,7 @@ export async function getSigner() {
  */
 export async function getContract() {
   const signer = await getSigner()
-  return new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer)
+  return new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer) as any
 }
 
 /**
@@ -51,7 +51,7 @@ export async function getContract() {
  */
 export function getReadOnlyContract() {
   const provider = getProvider()
-  return new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider)
+  return new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider) as any
 }
 
 /**

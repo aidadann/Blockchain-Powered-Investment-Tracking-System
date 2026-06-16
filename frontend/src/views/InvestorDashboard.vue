@@ -277,7 +277,7 @@ const chartAreaPath = computed(() => {
   const pts = chartPoints.value
   if (pts.length === 0) return ''
   const line = pts.map((pt, i) => `${i === 0 ? 'M' : 'L'}${pt.x},${pt.y}`).join(' ')
-  return line + ' L' + pts[pts.length - 1].x + ',150 L' + pts[0].x + ',150 Z'
+  return line + ' L' + pts[pts.length - 1]!.x + ',150 L' + pts[0]!.x + ',150 Z'
 })
 
 const chartYLabels = computed(() => {
