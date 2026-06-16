@@ -30,9 +30,6 @@ class AuthController extends Controller
             'role_id' => $request->input('role_id'),
         ]);
 
-        // Send email verification notification
-        $user->sendEmailVerificationNotification();
-
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -56,14 +53,6 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
-        }
-
-        // Check if email is verified
-        if (!$user->hasVerifiedEmail()) {
-            return response()->json([
-                'message' => 'Please verify your email address before logging in.',
-                'email_verified' => false,
-            ], 403);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
