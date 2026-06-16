@@ -12,14 +12,14 @@ const CONTRACT_ABI = [
   'event InvestmentApproved(uint256 id)'
 ]
 
-// Hardhat local node RPC URL
-const HARDHAT_RPC_URL = 'http://127.0.0.1:8545'
+// Default to Sepolia RPC URL (Alchemy), but allow override via environment variable
+const RPC_URL = import.meta.env.VITE_RPC_URL || 'https://eth-sepolia.g.alchemy.com/v2/FNpoIBaU2cIa09Tj99F1a'
 
 /**
  * Get a read-only provider connected to the local Hardhat node.
  */
 export function getProvider() {
-  return new ethers.JsonRpcProvider(HARDHAT_RPC_URL)
+  return new ethers.JsonRpcProvider(RPC_URL)
 }
 
 /**
