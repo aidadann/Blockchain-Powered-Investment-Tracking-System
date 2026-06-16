@@ -46,7 +46,7 @@
           A match proves the blockchain data is authentic and untampered.
         </p>
 
-        <p v-if="isLoading" class="loading-msg">Connecting to local Hardhat node at http://127.0.0.1:8545...</p>
+        <p v-if="isLoading" class="loading-msg">Connecting to Sepolia Testnet...</p>
         <p v-if="error" class="error-msg">{{ error }}</p>
 
         <div v-if="!isLoading && crossRef.length > 0" class="table-wrapper">
