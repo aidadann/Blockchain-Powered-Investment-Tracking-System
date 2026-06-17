@@ -57,7 +57,6 @@
                 <select id="role" v-model="roleId" required>
                   <option value="" disabled>Select your role</option>
                   <option value="1">Investor</option>
-                  <option value="2">Admin</option>
                   <option value="3">Auditor</option>
                 </select>
               </div>
