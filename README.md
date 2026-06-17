@@ -36,6 +36,11 @@ When an investment is approved, the transaction hash is synced back to the off-c
 * **Solidity (^0.8.0):** Smart contracts governing the business logic and Role-Based Access Control (RBAC).
 * **Hardhat:** Local Ethereum development environment for compiling, testing, and deploying. 
 
+### Deployment & Infrastructure ☁️
+* **Vercel:** Hosting the Vue 3 frontend SPA.
+* **Railway:** Hosting the Laravel 11 API and providing a managed MySQL database.
+* **Sepolia Testnet:** The live Ethereum test network where our smart contracts reside, powered by **Alchemy** RPC nodes.
+
 ---
 
 ## ✨ Key Features
@@ -43,13 +48,25 @@ When an investment is approved, the transaction hash is synced back to the off-c
 - **🔐 Role-Based Access Control (RBAC):** Investors invest, Admins approve, and Auditors audit. We enforce this symmetrically: off-chain via Vue router guards and Laravel middleware, and on-chain via Solidity modifiers. If you aren't on the list, the smart contract will bounce your transaction.
 - **💸 Two-Stage Investment Submission:** Submit the off-chain metadata via the Vue dashboard, then sign the state-changing transaction with MetaMask. Your details go to MySQL; your cryptographic proof goes to the blockchain.
 - **✅ Admin Verification:** Admins review pending investments and execute an on-chain approval. The resulting transaction hash is stored in the database for future cross-referencing.
-- **🕵️‍♂️ Built-in Blockchain Explorer:** A custom interface allowing Auditors to bypass the database entirely. It queries the Hardhat node directly via JSON-RPC so you can verify that the database matches the immutable ledger. Trust, but verify.
+- **🕵️‍♂️ Built-in Blockchain Explorer:** A custom interface allowing Auditors to bypass the database entirely. It queries the live Sepolia Testnet directly via JSON-RPC so you can verify that the database matches the immutable ledger. Trust, but verify.
 
 ---
 
-## 🚀 Local Installation (Not Deployed... Yet!)
+## 🌍 Live UAT Deployment
 
-Since this project is fresh out of the oven and currently living locally, here is how you can spin it up on your own machine. 
+The system has graduated from a local environment and is now live for User Acceptance Testing (UAT)! 
+
+- **Frontend:** Deployed on **Vercel**.
+- **Backend & Database:** Deployed on **Railway**.
+- **Smart Contracts:** Deployed to the **Sepolia Testnet**.
+
+*Note: Email verification has been intentionally disabled in the live environment to streamline the UAT testing process.*
+
+---
+
+## 🚀 Local Installation
+
+If you prefer to run the project locally instead of using the live environment, here is how you can spin it up on your own machine. 
 
 ### Prerequisites
 - Node.js & npm
@@ -99,7 +116,7 @@ npm run dev
 
 ## ⚠️ Disclaimer
 
-This is an academic/portfolio project. While it uses real cryptographic principles, the local Hardhat network uses monopoly money (fake ETH). Please do not deploy this exact code to the Ethereum Mainnet and expect it to manage your life savings without a professional audit. Gas fees are real, folks.
+This is an academic/portfolio project. While it uses real cryptographic principles, it currently operates on the Sepolia Testnet using "monopoly money" (test ETH). Please do not deploy this exact code to the Ethereum Mainnet and expect it to manage your life savings without a professional audit. Gas fees are real, folks.
 
 ---
 *Built with ❤️, ☕, and a healthy dose of decentralization.*
