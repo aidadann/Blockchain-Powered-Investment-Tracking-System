@@ -111,6 +111,7 @@
       </div>
 
       <p v-if="successMsg" class="global-success">{{ successMsg }}</p>
+      <p v-if="investmentStore.error" class="global-error">{{ investmentStore.error }}</p>
     </main>
 
     <!-- Help/Guide Button -->
@@ -269,6 +270,7 @@ async function handleConnectWallet() {
 .notif-list li { padding: 0.3rem 0; padding-left: 1rem; position: relative; }
 .notif-list li::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; border-radius: 50%; background: var(--color-primary); }
 .global-success { color: var(--color-success); font-weight: 700; margin-top: 1rem; font-size: 0.93rem; background: var(--color-success-bg); padding: 0.5rem 1rem; border-radius: var(--radius-sm); }
+.global-error { color: var(--color-error); font-weight: 700; margin-top: 1rem; font-size: 0.93rem; background: var(--color-error-bg); padding: 0.5rem 1rem; border-radius: var(--radius-sm); }
 
 .wallet-required { display: flex; align-items: center; gap: 0.5rem; background: var(--color-warning-bg); color: var(--color-warning-text); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 600; margin-bottom: 0.75rem; border: 1px solid rgba(245, 158, 11, 0.2); }
 
