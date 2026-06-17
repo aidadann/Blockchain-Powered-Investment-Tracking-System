@@ -126,7 +126,7 @@
         <ol class="guide-steps">
           <li>Install the <a href="https://metamask.io/" target="_blank">MetaMask Browser Extension</a>.</li>
           <li>Follow the setup instructions to create a new wallet (save your seed phrase).</li>
-          <li>Once logged in, click the <strong>Network Dropdown</strong> at the top left of MetaMask.</li>
+          <li>Once logged in, click the <strong>Network</strong> after opening the menu at the top right of MetaMask.</li>
           <li>Toggle on <strong>"Show test networks"</strong>.</li>
           <li>Select <strong>Sepolia</strong> from the list of networks.</li>
         </ol>
