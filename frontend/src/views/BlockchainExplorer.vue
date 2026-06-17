@@ -17,7 +17,7 @@
       <div class="info-row">
         <div class="info-card">
           <div class="info-label">Network</div>
-          <div class="info-value">Hardhat Local (Chain ID: 31337)</div>
+          <div class="info-value">Sepolia Testnet (Chain ID: 11155111)</div>
         </div>
         <div class="info-card">
           <div class="info-label">Contract Address</div>
