@@ -179,6 +179,30 @@
         <p v-if="successMsg" class="success-msg">{{ successMsg }}</p>
         <p v-if="investmentStore.error" class="error-msg">{{ investmentStore.error }}</p>
       </div>
+      </div>
+    </div>
+
+    <!-- Help/Guide Button -->
+    <button class="btn-guide-floating" @click="showGuide = true">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Guide
+    </button>
+
+    <!-- Guide Modal -->
+    <div v-if="showGuide" class="modal-overlay" @click.self="showGuide = false">
+      <div class="modal-content guide-modal">
+        <h2>MetaMask Setup Guide</h2>
+        <ol class="guide-steps">
+          <li>Install the <a href="https://metamask.io/" target="_blank">MetaMask Browser Extension</a>.</li>
+          <li>Follow the setup instructions to create a new wallet (save your seed phrase).</li>
+          <li>Once logged in, click the <strong>Network Dropdown</strong> at the top left of MetaMask.</li>
+          <li>Toggle on <strong>"Show test networks"</strong>.</li>
+          <li>Select <strong>Sepolia</strong> from the list of networks.</li>
+        </ol>
+        <div class="modal-actions">
+          <button class="btn-cancel" @click="showGuide = false" style="width: 100%">Close Guide</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -196,6 +220,7 @@ const investmentStore = useInvestmentStore()
 
 const showForm = ref(false)
 const showProfileMenu = ref(false)
+const showGuide = ref(false)
 const assetName = ref('')
 const amount = ref<number | null>(null)
 const successMsg = ref('')
@@ -788,6 +813,15 @@ th {
 .nav-left { display: flex; align-items: center; gap: 0.75rem; }
 .nav-brand { color: white; font-weight: 700; font-size: 1rem; letter-spacing: -0.01em; }
 .wallet-required { display: flex; align-items: center; gap: 0.5rem; background: var(--color-warning-bg); color: var(--color-warning-text); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); font-size: 0.82rem; font-weight: 600; margin-bottom: 0.75rem; border: 1px solid rgba(245, 158, 11, 0.2); }
+
+/* ===== Guide Modal ===== */
+.btn-guide-floating { position: fixed; bottom: 2rem; left: 2rem; background: var(--color-surface); border: 1px solid var(--color-border); padding: 0.8rem 1.2rem; border-radius: 30px; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: var(--color-text); cursor: pointer; box-shadow: var(--shadow-md); z-index: 100; transition: all 200ms ease; }
+.btn-guide-floating:hover { background: var(--color-primary); color: white; border-color: var(--color-primary); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.guide-modal { max-width: 500px; }
+.guide-steps { margin: 1.5rem 0; padding-left: 1.5rem; text-align: left; line-height: 1.6; color: var(--color-text-secondary); }
+.guide-steps li { margin-bottom: 0.5rem; }
+.guide-steps a { color: var(--color-primary); text-decoration: none; }
+.guide-steps a:hover { text-decoration: underline; }
 
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
