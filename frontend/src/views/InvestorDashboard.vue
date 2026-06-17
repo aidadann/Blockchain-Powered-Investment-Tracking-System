@@ -179,7 +179,6 @@
         <p v-if="successMsg" class="success-msg">{{ successMsg }}</p>
         <p v-if="investmentStore.error" class="error-msg">{{ investmentStore.error }}</p>
       </div>
-      </div>
     </div>
 
     <!-- Help/Guide Button -->
