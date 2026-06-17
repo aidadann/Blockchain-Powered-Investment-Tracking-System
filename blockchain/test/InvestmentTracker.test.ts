@@ -18,9 +18,7 @@ describe("InvestmentTracker", function () {
         await investmentTracker.waitForDeployment();
     });
 
-    // =========================================================================
     // WB-01 to WB-03: RoleManager — Role Assignment Tests
-    // =========================================================================
 
     describe("RoleManager", function () {
 
@@ -44,9 +42,7 @@ describe("InvestmentTracker", function () {
 
     });
 
-    // =========================================================================
     // WB-04 to WB-09: InvestmentTracker — Core Logic Tests
-    // =========================================================================
 
     describe("InvestmentTracker", function () {
 
