@@ -55,6 +55,7 @@ When an investment is approved, the transaction hash is synced back to the off-c
 ## 🌍 Live UAT Deployment
 
 The system has graduated from a local environment and is now live for User Acceptance Testing (UAT)!
+
 System Link: https://blockchain-powered-investment-track.vercel.app
 
 ### 1. Blockchain Layer (Sepolia Testnet)
