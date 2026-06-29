@@ -56,11 +56,25 @@ When an investment is approved, the transaction hash is synced back to the off-c
 
 The system has graduated from a local environment and is now live for User Acceptance Testing (UAT)! 
 
-- **Frontend:** Deployed on **Vercel**.
-- **Backend & Database:** Deployed on **Railway**.
+### 1. Blockchain Layer (Sepolia Testnet)
 - **Smart Contracts:** Deployed to the **Sepolia Testnet**.
+- **RPC Provider:** Uses Alchemy to interact directly with the Sepolia Testnet.
+- **Secure Configuration:** Environment variables (`.env`) are used to securely manage `SEPOLIA_RPC_URL` and `DEPLOYER_PRIVATE_KEY`.
 
-*Note: Email verification has been intentionally disabled in the live environment to streamline the UAT testing process.*
+### 2. Backend API (Railway / Laravel)
+- **Hosting & Database:** Deployed on **Railway** with an automatically provisioned MySQL database.
+- **Database Seeding:** The live database has been seeded with default test users (`admin@test.com`, `investor@test.com`, `auditor@test.com` with password `password123`).
+- **Configuration:** Railway's MySQL environment variables are mapped to Laravel. A `Procfile` is configured to correctly serve the API.
+- **Email Verification:** Intentionally disabled in the live environment to streamline the UAT testing process and prevent API timeout issues during registration.
+
+### 3. Frontend SPA (Vercel / Vue 3)
+- **Hosting:** Deployed on **Vercel**.
+- **API Routing:** Dynamically routes to the live Railway backend via environment variables (`VITE_API_BASE_URL`).
+- **Smart Contract Connection:** Configured to use the live Sepolia contract address and interact directly via the Alchemy RPC URL, abandoning the local fallback.
+- **Type Safety:** Codebase compiled with strict TypeScript rules and explicit Ethers.js types for enhanced reliability in production.
+
+### 4. Testing & QA
+- **Postman Guide:** A step-by-step Postman guide is available for configuring environments, bearer tokens, and API requests to execute backend Whitebox test cases.
 
 ---
 
