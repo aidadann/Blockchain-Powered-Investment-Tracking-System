@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', {
                 // Restore wallet address if the user already has one saved in DB
                 if (this.user?.wallet_address) {
                     this.walletAddress = this.user.wallet_address
-                    localStorage.setItem('walletAddress', this.walletAddress)
+                    localStorage.setItem('walletAddress', this.walletAddress as string)
                 }
 
             } catch (error) {
@@ -72,7 +72,7 @@ export const useAuthStore = defineStore('auth', {
                 // Sync wallet address from DB if available
                 if (this.user?.wallet_address && !this.walletAddress) {
                     this.walletAddress = this.user.wallet_address
-                    localStorage.setItem('walletAddress', this.walletAddress)
+                    localStorage.setItem('walletAddress', this.walletAddress as string)
                 }
             } catch (error) {
                 console.error('Fetch user failed:', error)
