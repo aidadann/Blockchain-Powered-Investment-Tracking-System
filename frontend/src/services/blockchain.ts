@@ -121,3 +121,69 @@ export function listenForApprovals(onApproved: (investmentId: number) => void): 
     contract.off('InvestmentApproved', handler)
   }
 }
+
+/**
+ * Check if MetaMask is already connected WITHOUT prompting the user.
+ * Returns the connected wallet address or null if not connected.
+ */
+export async function getConnectedWalletAddress(): Promise<string | null> {
+  if (!(window as any).ethereum) {
+    return null
+  }
+
+  try {
+    // eth_accounts does NOT trigger a popup — it only returns already-connected accounts
+    const accounts = await (window as any).ethereum.request({ method: 'eth_accounts' })
+    return accounts.length > 0 ? accounts[0] : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Ensure MetaMask is connected to the Sepolia test network.
+ * If the user is on a different network, prompt them to switch.
+ * Sepolia chainId: 0xaa36a7 (11155111 in decimal)
+ */
+export async function switchToSepolia(): Promise<boolean> {
+  if (!(window as any).ethereum) return false
+
+  const SEPOLIA_CHAIN_ID = '0xaa36a7'
+
+  try {
+    const currentChainId = await (window as any).ethereum.request({ method: 'eth_chainId' })
+
+    if (currentChainId === SEPOLIA_CHAIN_ID) {
+      return true // Already on Sepolia
+    }
+
+    // Request MetaMask to switch to Sepolia
+    await (window as any).ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: SEPOLIA_CHAIN_ID }]
+    })
+
+    return true
+  } catch (error: any) {
+    // Error code 4902 means the chain hasn't been added to MetaMask
+    if (error.code === 4902) {
+      try {
+        await (window as any).ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: SEPOLIA_CHAIN_ID,
+            chainName: 'Sepolia Testnet',
+            nativeCurrency: { name: 'SepoliaETH', symbol: 'ETH', decimals: 18 },
+            rpcUrls: ['https://rpc.sepolia.org'],
+            blockExplorerUrls: ['https://sepolia.etherscan.io']
+          }]
+        })
+        return true
+      } catch {
+        return false
+      }
+    }
+    return false
+  }
+}
+

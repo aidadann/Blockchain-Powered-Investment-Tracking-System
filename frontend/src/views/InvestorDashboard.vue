@@ -11,6 +11,10 @@
           {{ walletAddress.slice(0, 6) }}...{{ walletAddress.slice(-4) }}
         </div>
         <button v-else class="btn-connect-wallet" @click="handleConnectWallet">Connect Wallet</button>
+        <button v-if="walletAddress" class="btn-get-eth" @click="showGasFunding = true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Get Test ETH
+        </button>
         <router-link to="/explorer" class="explorer-link"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Explorer</router-link>
         <button class="nav-btn profile-btn" @click="showProfileMenu = !showProfileMenu">
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -203,6 +207,13 @@
         </div>
       </div>
     </div>
+
+    <!-- Gas Funding Modal -->
+    <GasFundingModal
+      v-if="showGasFunding && walletAddress"
+      :walletAddress="walletAddress"
+      @close="showGasFunding = false"
+    />
   </div>
 </template>
 
@@ -211,7 +222,8 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useInvestmentStore } from '../stores/investment'
-import { connectWallet, listenForApprovals } from '../services/blockchain'
+import { connectWallet, getConnectedWalletAddress, switchToSepolia, listenForApprovals } from '../services/blockchain'
+import GasFundingModal from '../components/GasFundingModal.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -220,13 +232,14 @@ const investmentStore = useInvestmentStore()
 const showForm = ref(false)
 const showProfileMenu = ref(false)
 const showGuide = ref(false)
+const showGasFunding = ref(false)
 const assetName = ref('')
 const amount = ref<number | null>(null)
 const successMsg = ref('')
 const walletAddress = ref('')
 let cleanupListener: (() => void) | null = null
 
-onMounted(() => {
+onMounted(async () => {
   investmentStore.fetchInvestments()
 
   // Listen for on-chain InvestmentApproved events and auto-refresh
@@ -234,6 +247,9 @@ onMounted(() => {
     console.log(`Investment #${investmentId} approved on-chain. Refreshing...`)
     investmentStore.fetchInvestments()
   })
+
+  // Auto-connect MetaMask on dashboard load
+  await autoConnectWallet()
 })
 
 onUnmounted(() => {
@@ -338,9 +354,59 @@ async function handleLogout() {
 
 async function handleConnectWallet() {
   try {
-    walletAddress.value = await connectWallet()
+    // Ensure Sepolia network
+    await switchToSepolia()
+    const address = await connectWallet()
+    walletAddress.value = address
+
+    // Save to backend
+    try {
+      await auth.saveWalletAddress(address)
+    } catch (saveErr: any) {
+      console.warn('Failed to save wallet to backend:', saveErr.message)
+    }
   } catch (err: any) {
     console.warn('MetaMask connection failed:', err.message)
+  }
+}
+
+/**
+ * Attempt to silently reconnect MetaMask if it was previously connected.
+ * If not previously connected, prompt the user.
+ */
+async function autoConnectWallet() {
+  // First, check if already connected from a previous session (stored in auth store)
+  if (auth.walletAddress) {
+    walletAddress.value = auth.walletAddress
+  }
+
+  // Then try to silently check if MetaMask is still connected (no popup)
+  const existingAddress = await getConnectedWalletAddress()
+  if (existingAddress) {
+    walletAddress.value = existingAddress
+    // Ensure correct network
+    await switchToSepolia()
+    // Save if not already saved
+    if (!auth.walletAddress || auth.walletAddress.toLowerCase() !== existingAddress.toLowerCase()) {
+      try {
+        await auth.saveWalletAddress(existingAddress)
+      } catch (err: any) {
+        console.warn('Failed to save wallet to backend:', err.message)
+      }
+    }
+    return
+  }
+
+  // If no existing connection, prompt MetaMask connect
+  if (!walletAddress.value) {
+    try {
+      await switchToSepolia()
+      const address = await connectWallet()
+      walletAddress.value = address
+      await auth.saveWalletAddress(address)
+    } catch (err: any) {
+      console.warn('Auto-connect wallet skipped:', err.message)
+    }
   }
 }
 </script>
@@ -414,6 +480,25 @@ async function handleConnectWallet() {
   gap: 0.35rem;
 }
 .btn-connect-wallet:hover { background: #c96516; }
+
+.btn-get-eth {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 200ms ease;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.btn-get-eth:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+}
 
 .profile-btn {
   display: flex;

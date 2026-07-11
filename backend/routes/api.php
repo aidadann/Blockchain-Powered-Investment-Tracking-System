@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\FaucetController;
 
 // =====================================================
 // PROTECTED ROUTES (requires authentication)
@@ -20,6 +21,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/investments/{id}', [InvestmentController::class, 'destroy'])->middleware('role:investor');
 
     Route::get('/audits', [AuditLogController::class, 'index'])->middleware('role:auditor');
+
+    // Wallet address linking
+    Route::post('/auth/wallet', [AuthController::class, 'saveWalletAddress']);
+
+    // Faucet (auto-fund) — Investor role only
+    Route::post('/faucet/auto-fund', [FaucetController::class, 'autoFund'])->middleware('role:investor');
+    Route::get('/faucet/status', [FaucetController::class, 'status'])->middleware('role:investor');
 });
 
 // =====================================================

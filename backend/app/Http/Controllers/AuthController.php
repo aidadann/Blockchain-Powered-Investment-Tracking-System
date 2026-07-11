@@ -90,6 +90,43 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Save or update the user's MetaMask wallet address.
+     */
+    public function saveWalletAddress(Request $request)
+    {
+        $request->validate([
+            'wallet_address' => [
+                'required',
+                'string',
+                'size:42',
+                'regex:/^0x[a-fA-F0-9]{40}$/',
+            ],
+        ]);
+
+        $user = $request->user();
+        $walletAddress = $request->input('wallet_address');
+
+        // Check if another user already has this wallet
+        $existing = User::where('wallet_address', $walletAddress)
+            ->where('id', '!=', $user->id)
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'message' => 'This wallet address is already linked to another account.'
+            ], 409);
+        }
+
+        $user->wallet_address = $walletAddress;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Wallet address saved successfully.',
+            'wallet_address' => $walletAddress,
+        ], 200);
+    }
+
     // =====================================================
     // EMAIL VERIFICATION
     // =====================================================

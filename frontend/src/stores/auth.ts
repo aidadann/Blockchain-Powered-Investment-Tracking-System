@@ -5,6 +5,7 @@ export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: null as any | null,
         token: localStorage.getItem('token') as string | null,
+        walletAddress: localStorage.getItem('walletAddress') as string | null,
     }),
 
     getters: {
@@ -30,6 +31,12 @@ export const useAuthStore = defineStore('auth', {
 
                 api.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
 
+                // Restore wallet address if the user already has one saved in DB
+                if (this.user?.wallet_address) {
+                    this.walletAddress = this.user.wallet_address
+                    localStorage.setItem('walletAddress', this.walletAddress)
+                }
+
             } catch (error) {
                 console.error('Login failed:', error)
                 throw error
@@ -45,8 +52,10 @@ export const useAuthStore = defineStore('auth', {
 
             this.user = null
             this.token = null
+            this.walletAddress = null
 
             localStorage.removeItem('token')
+            localStorage.removeItem('walletAddress')
             delete api.defaults.headers.common['Authorization']
         },
 
@@ -59,11 +68,31 @@ export const useAuthStore = defineStore('auth', {
                 const response = await api.get('/auth/user')
 
                 this.user = response.data.user
+
+                // Sync wallet address from DB if available
+                if (this.user?.wallet_address && !this.walletAddress) {
+                    this.walletAddress = this.user.wallet_address
+                    localStorage.setItem('walletAddress', this.walletAddress)
+                }
             } catch (error) {
                 console.error('Fetch user failed:', error)
 
                 this.logout()
             }
         },
+
+        /**
+         * Save the MetaMask wallet address to the backend and local state.
+         */
+        async saveWalletAddress(address: string) {
+            try {
+                await api.post('/auth/wallet', { wallet_address: address })
+                this.walletAddress = address
+                localStorage.setItem('walletAddress', address)
+            } catch (error: any) {
+                console.error('Failed to save wallet address:', error)
+                throw error
+            }
+        },
     },
-})
+})

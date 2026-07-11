@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'role_id',
         'wallet_address',
+        'last_funded_at',
     ];
 
     /**
@@ -46,6 +47,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_funded_at' => 'datetime',
         ];
     }
 
